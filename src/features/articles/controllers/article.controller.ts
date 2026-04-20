@@ -8,7 +8,8 @@ const articleCache = new NodeCache({ stdTTL: 3600 });
 
 export class ArticleController {
   async getArticle(req: Request, res: Response): Promise<void> {
-    const { lang, title } = req.params;
+    const lang = req.params.lang as string;
+    const title = req.params.title as string;
     const cacheKey = `${lang}:${title}`;
 
     const cachedArticle = articleCache.get(cacheKey);
