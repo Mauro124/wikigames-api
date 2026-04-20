@@ -1,0 +1,23 @@
+{
+  "info": {
+    "_postman_id": "FCF3564E-FD85-4290-8828-062236D71711",
+    "name": "WikiGames - System",
+    "description": "Endpoints de salud e infraestructura base.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

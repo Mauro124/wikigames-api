@@ -1,0 +1,36 @@
+{
+  "info": {
+    "_postman_id": "3381389C-DCC8-4075-9389-2B1280AB1CE4",
+    "name": "WikiGames - Articles",
+    "description": "Proxy para Wikipedia con limpieza de HTML.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Sanitized Article",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/articles/en/Earth",
+          "host": ["{{base_url}}"],
+          "path": ["articles", "en", "Earth"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Sanitized Article (ES)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/articles/es/Dinosaurio",
+          "host": ["{{base_url}}"],
+          "path": ["articles", "es", "Dinosaurio"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

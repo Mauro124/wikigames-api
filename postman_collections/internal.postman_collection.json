@@ -1,0 +1,38 @@
+{
+  "info": {
+    "_postman_id": "F0BBB5BC-A1B5-4E31-BCCC-7E541AEC6A6C",
+    "name": "WikiGames - Internal",
+    "description": "Endpoints protegidos para administración y tareas programadas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Generate Challenge",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-GENERATOR-KEY",
+            "value": "{{generator_key}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"force\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/internal/challenges/generate",
+          "host": ["{{base_url}}"],
+          "path": ["internal", "challenges", "generate"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
