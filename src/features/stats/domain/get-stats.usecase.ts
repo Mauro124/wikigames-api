@@ -7,12 +7,10 @@ export class GetStatsUseCase {
 
     if (!stats) return null;
 
-    // Calculate pro-rates for the client
     return {
       ...stats,
-      averageClicks:
-        stats.totalWins > 0 ? Number((stats.sumClicks / stats.totalWins).toFixed(2)) : 0,
-      averageTime: stats.totalWins > 0 ? Number((stats.sumTime / stats.totalWins).toFixed(0)) : 0,
+      averageClicks: stats.totalWins > 0 ? Math.round(stats.sumClicks / stats.totalWins) : 0,
+      averageTime: stats.totalWins > 0 ? Math.round(stats.sumTime / stats.totalWins) : 0,
     };
   }
 }
