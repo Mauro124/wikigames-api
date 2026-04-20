@@ -26,7 +26,8 @@ describe('SubmitResultUseCase', () => {
 
     const response = await submitResultUseCase.execute(validResult as any);
 
-    expect(response).toEqual({ success: true });
+    expect(response.success).toBe(true);
+    expect(response.shareText).toBeDefined();
     expect(resultsRepository.exists).toHaveBeenCalledWith('2024-06-01_0', 'user123');
     expect(resultsRepository.save).toHaveBeenCalledWith(validResult);
     expect(statsRepository.incrementStats).toHaveBeenCalledWith('2024-06-01_0', 5, 60);

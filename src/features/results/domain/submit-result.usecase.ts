@@ -1,12 +1,15 @@
 import { GameResult } from './result.entity';
 import { resultsRepository } from '../data/firestore-results.repository';
 import { statsRepository } from '@features/stats/data/firestore-stats.repository';
+import { getStatsUseCase } from '@features/stats/domain/get-stats.usecase';
+import { shareVisualizer } from '../utils/share-visualizer';
 import { logger } from '@shared/services/logger.service';
 import { AppError } from '@shared/domain/app-error';
 
 export interface SubmitResultResponse {
   success: boolean;
   alreadySubmitted?: boolean;
+  shareText?: string;
 }
 
 export class SubmitResultUseCase {
@@ -34,8 +37,12 @@ export class SubmitResultUseCase {
     await resultsRepository.save(result);
     await statsRepository.incrementStats(challengeId, clicks, timeSeconds);
 
+    const stats = await getStatsUseCase.execute(challengeId);
+    const avgClicks = stats?.averageClicks || 0;
+    const shareText = shareVisualizer.generate(challengeId, clicks, timeSeconds, avgClicks);
+
     logger.info({ msg: 'Result submitted and stats aggregated', challengeId, userId });
-    return { success: true };
+    return { success: true, shareText };
   }
 }
 
