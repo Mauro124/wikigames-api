@@ -24,6 +24,9 @@ export class WikipediaFeedService {
           format: 'json',
           origin: '*',
         },
+        headers: {
+          'User-Agent': 'WikiGameBackend/1.0 (contact@example.com)',
+        },
       });
 
       const data = response.data;
@@ -59,6 +62,9 @@ export class WikipediaFeedService {
             format: 'json',
             origin: '*',
             plcontinue: continueToken,
+          },
+          headers: {
+            'User-Agent': 'WikiGameBackend/1.0 (contact@example.com)',
           },
         });
 
