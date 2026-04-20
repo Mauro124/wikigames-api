@@ -4,8 +4,8 @@ import { challengeController } from '@features/challenges/controllers/challenge.
 
 const statsRouter = Router();
 
-statsRouter.get('/today', challengeController.getToday);
-statsRouter.get('/', challengeController.list);
-statsRouter.get('/:id/stats', statsController.getStats);
+statsRouter.get('/today', challengeController.getToday.bind(challengeController));
+statsRouter.get('/', challengeController.list.bind(challengeController));
+statsRouter.get('/:id/stats', statsController.getStats.bind(statsController));
 
 export { statsRouter };
