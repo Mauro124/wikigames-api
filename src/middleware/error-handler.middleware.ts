@@ -1,13 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '@shared/services/logger.service';
+import { AppError } from '@shared/domain/app-error';
 
 const errorHandler = (err: any, req: Request, res: Response, _next: NextFunction) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
+  const isOperational = err instanceof AppError ? err.isOperational : false;
 
-  logger.error({
+  req.log.error({
     msg: message,
-    err,
+    err: {
+      name: err.name,
+      message: err.message,
+      stack: process.env.NODE_ENV === 'production' ? undefined : err.stack,
+    },
+    isOperational,
     path: req.path,
     method: req.method,
   });
@@ -16,6 +22,7 @@ const errorHandler = (err: any, req: Request, res: Response, _next: NextFunction
     status: 'error',
     statusCode,
     message,
+    isOperational,
   });
 };
 

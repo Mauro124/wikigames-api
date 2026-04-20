@@ -15,7 +15,7 @@ export class SubmitResultUseCase {
 
     await resultsRepository.save(result);
     await statsRepository.incrementStats(challengeId, clicks, timeSeconds);
-    
+
     logger.info({ msg: 'Result submitted and stats aggregated', challengeId, userId });
   }
 }

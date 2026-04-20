@@ -78,4 +78,15 @@ C4Container
 
 ## Project Context Baseline Updates
 
-- [Initial SAD creation based on feature-sliced layers.]
+- **Architecture Strategy**: Enforced Feature-Sliced Design (`domain/data/controllers`) within each feature slice.
+- **Article Proxy**: Implemented `ArticleCooker` domain service using `cheerio` for HTML sanitization and link rewriting. Caching layer uses `node-cache` with 1-hour TTL.
+- **Challenge Generation**: Automated batch generator creates 30 days of content (10 per day) using Wikipedia category members. BFS depth limit of 6 ensures solvability.
+- **Data Access**: Unified `BaseFirestoreRepository<T>` pattern. Specific feature repositories (Challenges, Results, Stats) implement domain interfaces and use deterministic IDs and atomic increments.
+
+- **Error Handling**: Standardized `AppError` class and 4-argument global error middleware leveraging Express 5.x native async support.
+
+
+- **Observability**: Structured logging via `pino-http` with automatic `reqId` generation and correlation.
+- **Data Access**: `BaseFirestoreRepository<T>` pattern for consistent CRUD operations and metadata management across all features.
+- **Security Baseline**: `helmet` and `cors` (environment-specific) configured at the root middleware stack.
+

@@ -7,7 +7,7 @@
   },
   "item": [
     {
-      "name": "Generate Challenge",
+      "name": "Generate Monthly Batch",
       "request": {
         "method": "POST",
         "header": [
@@ -19,7 +19,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"force\": true\n}",
+          "raw": "{\n    \"startDate\": \"2024-06-01\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -30,7 +30,8 @@
           "raw": "{{base_url}}/internal/challenges/generate",
           "host": ["{{base_url}}"],
           "path": ["internal", "challenges", "generate"]
-        }
+        },
+        "description": "Genera 30 días de desafíos (10 por día) con categorías temáticas y verificación de ruta BFS."
       },
       "response": []
     }

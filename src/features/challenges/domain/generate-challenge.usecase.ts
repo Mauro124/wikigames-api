@@ -1,66 +1,98 @@
-import { DateTime } from 'luxon';
+import { Challenge } from './challenge.entity';
 import { wikipediaFeedService } from '../data/wikipedia-feed.service';
 import { challengesRepository } from '../data/firestore-challenges.repository';
+import { CATEGORIES } from './categories';
 import { logger } from '@shared/services/logger.service';
-import { Challenge } from './challenge.entity';
 
 export class GenerateChallengeUseCase {
-  private FORBIDDEN_KEYWORDS = [
-    'Main_Page',
-    'List_of',
-    'File:',
-    'Category:',
-    'Portal:',
-    'Special:',
-    'Template:',
-  ];
+  /**
+   * Generates 30 days of challenges (10 per day) starting from a specific date.
+   */
+  async generateMonthlyBatch(startDate: Date): Promise<number> {
+    let totalGenerated = 0;
+    const lang = 'en';
 
-  async execute(dateStr?: string, force = false): Promise<Challenge> {
-    const targetDate = dateStr ? DateTime.fromISO(dateStr) : DateTime.now().plus({ days: 1 });
-    const id = targetDate.toFormat('yyyy-MM-dd');
-    const datePath = targetDate.toFormat('yyyy/MM/dd');
+    for (let day = 0; day < 30; day++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + day);
+      const dateId = currentDate.toISOString().split('T')[0];
 
-    // 1. Check if already exists
-    const existing = await challengesRepository.findById(id);
-    if (existing && !force) {
-      logger.info({ msg: 'Challenge already exists, skipping', id });
-      return existing;
-    }
+      // Assign one category per day (wrap around if CATEGORIES.length < 30)
+      const category = CATEGORIES[day % CATEGORIES.length];
+      logger.info(`Generating challenges for ${dateId} (Category: ${category})`);
 
-    // 2. Fetch Feed
-    const feed = await wikipediaFeedService.fetchFeed(datePath);
+      const pool = await wikipediaFeedService.getRandomArticlesFromCategory(lang, category, 100);
 
-    // 3. Selection & Filtering
-    // Wikipedia sometimes doesn't have 'mostread' for very early UTC hours. 
-    // Fallback to Featured Article or a generic start if mostread is missing.
-    let startTitle = 'Earth'; // Hardcoded safe fallback
-
-    if (feed.mostread && feed.mostread.articles && feed.mostread.articles.length > 0) {
-      const filteredStart = feed.mostread.articles
-        .map((a) => a.article)
-        .filter((title) => !this.FORBIDDEN_KEYWORDS.some((k) => title.includes(k)));
-
-      if (filteredStart.length > 0) {
-        startTitle = filteredStart[0];
+      if (pool.length < 2) {
+        logger.warn(`Pool for category ${category} too small. Skipping.`);
+        continue;
       }
-    } else {
-      logger.warn({ msg: 'Mostread missing in feed, using fallback startTitle', id });
+
+      let challengesForDay = 0;
+      let attempts = 0;
+      const maxAttempts = 50;
+
+      while (challengesForDay < 10 && attempts < maxAttempts) {
+        attempts++;
+        const start = pool[Math.floor(Math.random() * pool.length)];
+        const end = pool[Math.floor(Math.random() * pool.length)];
+
+        if (start === end) continue;
+
+        const reachable = await this.isReachable(lang, start, end);
+        if (reachable) {
+          const challenge: Challenge = {
+            id: `${dateId}_${challengesForDay}`,
+            startTitle: start,
+            endTitle: end,
+            lang,
+            category,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+
+          await challengesRepository.save(challenge);
+          challengesForDay++;
+          totalGenerated++;
+        }
+      }
+
+      logger.info(`Finished ${dateId}: ${challengesForDay} challenges generated.`);
     }
 
-    const endTitle = feed.tfa?.title || 'Philosophy';
+    return totalGenerated;
+  }
 
-    const challenge: Challenge = {
-      id,
-      startTitle,
-      endTitle,
-      lang: 'en',
-      createdAt: new Date(),
-    };
+  /**
+   * Verifies if a path exists between start and end within 6 clicks using BFS.
+   */
+  async isReachable(lang: string, start: string, end: string): Promise<boolean> {
+    const queue: string[] = [start];
+    const visited = new Set<string>([start]);
+    const depth = new Map<string, number>([[start, 0]]);
 
-    await challengesRepository.save(challenge);
-    logger.info({ msg: 'New challenge generated', id, startTitle, endTitle });
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const currentDepth = depth.get(current)!;
 
-    return challenge;
+      if (currentDepth >= 6) continue;
+
+      const links = await wikipediaFeedService.getLinksForPage(lang, current);
+
+      for (const link of links) {
+        if (link === end) return true;
+        if (!visited.has(link)) {
+          visited.add(link);
+          depth.set(link, currentDepth + 1);
+          queue.push(link);
+        }
+        // Early exit for BFS breadth to avoid memory issues
+        if (queue.length > 1000) break;
+      }
+      if (queue.length > 1000) break;
+    }
+
+    return false;
   }
 }
 

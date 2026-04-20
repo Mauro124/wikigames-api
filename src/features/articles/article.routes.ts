@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { articleController } from './controllers/article.controller';
 
-const articleRouter = Router();
+const router = Router();
 
-articleRouter.get('/:lang/:title', articleController.getArticle);
+// GET /articles/:lang/:title
+router.get('/:lang/:title', articleController.getArticle.bind(articleController));
 
-export { articleRouter };
+export { router as articleRouter };

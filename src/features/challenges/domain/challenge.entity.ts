@@ -1,7 +1,8 @@
-export interface Challenge {
-  id: string; // YYYY-MM-DD
+import { BaseEntity } from '@shared/domain/base.entity';
+
+export interface Challenge extends BaseEntity {
   startTitle: string;
   endTitle: string;
   lang: string;
-  createdAt: any;
+  category: string;
 }

@@ -8,7 +8,9 @@ export class StatsController {
     try {
       const stats = await getStatsUseCase.execute(id as string);
       if (!stats) {
-        return res.status(404).json({ status: 'error', message: 'Stats not found for this challenge' });
+        return res
+          .status(404)
+          .json({ status: 'error', message: 'Stats not found for this challenge' });
       }
       res.status(200).json(stats);
     } catch (error) {

@@ -28,6 +28,7 @@ export class FirestoreStatsRepository
         sumClicks: admin.firestore.FieldValue.increment(clicks),
         sumTime: admin.firestore.FieldValue.increment(timeSeconds),
         [`distribution.${bucket}`]: admin.firestore.FieldValue.increment(1),
+        updatedAt: new Date(),
       },
       { merge: true },
     );

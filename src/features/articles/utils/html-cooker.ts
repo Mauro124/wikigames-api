@@ -1,67 +1,110 @@
 import * as cheerio from 'cheerio';
 import { ArticleBlock, ArticleSpan } from '../domain/article.entity';
 
-export const cookArticle = (rawHtml: string): ArticleBlock[] => {
-  const $ = cheerio.load(rawHtml);
-  const blocks: ArticleBlock[] = [];
+export class ArticleCooker {
+  /**
+   * Transforms raw Wikipedia HTML into a structured list of ArticleBlocks.
+   */
+  cook(html: string): ArticleBlock[] {
+    const $ = cheerio.load(html);
+    const content = $('#mw-content-text .mw-parser-output');
+    const blocks: ArticleBlock[] = [];
 
-  // Wikipedia content usually resides in specific containers
-  const content = $('body');
+    // If the expected structure is missing, try a broader search within the content text
+    const target = content.length > 0 ? content : $('#mw-content-text');
 
-  content.find('> p, > h2, > h3, > figure').each((_, el) => {
-    const node = $(el);
-    const tagName = el.type === 'tag' ? el.name : '';
+    target.children().each((_, el) => {
+      const $el = $(el);
+      const tagName = el.tagName.toLowerCase();
 
-    if (tagName.startsWith('h')) {
-      const titleText = node.text().replace(/\[edit\]/g, '').trim();
-      if (titleText) {
-        blocks.push({
-          type: 'header',
-          text: titleText,
-          level: parseInt(tagName.substring(1)) || 2
-        });
-      }
-    } 
-    else if (tagName === 'p') {
-      const spans: ArticleSpan[] = [];
-      
-      // Process children to find text and links
-      node.contents().each((_, child) => {
-        const childNode = $(child);
-        if (child.type === 'text') {
-          const text = childNode.text();
-          if (text) spans.push({ text });
-        } else if (child.type === 'tag' && child.name === 'a') {
-          const href = childNode.attr('href');
-          const linkText = childNode.text().trim();
-          if (href && href.startsWith('/wiki/') && linkText) {
-            spans.push({ 
-              text: childNode.text(), 
-              link: href.replace('/wiki/', '') 
-            });
-          } else {
-            spans.push({ text: childNode.text() });
-          }
-        } else if (child.type === 'tag' && ['b', 'i', 'strong', 'em'].includes(child.name)) {
-             spans.push({ text: childNode.text() });
+      if (['h1', 'h2', 'h3'].includes(tagName)) {
+        const text = $el
+          .text()
+          .replace(/\[edit\]/g, '')
+          .trim();
+        if (text) {
+          blocks.push({
+            type: 'header',
+            text,
+            level: parseInt(tagName.substring(1), 10),
+          });
         }
-      });
+      } else if (tagName === 'p') {
+        const spans = this.parseParagraph($el, $);
+        if (spans.length > 0) {
+          blocks.push({
+            type: 'paragraph',
+            spans,
+          });
+        }
+      }
+    });
 
-      if (spans.length > 0) {
-        blocks.push({ type: 'paragraph', spans });
+    return blocks;
+  }
+
+  /**
+   * Parses a paragraph element into ArticleSpans, identifying and rewriting internal links.
+   */
+  private parseParagraph(
+    $p: cheerio.Cheerio<cheerio.Element>,
+    $: cheerio.CheerioAPI,
+  ): ArticleSpan[] {
+    const spans: ArticleSpan[] = [];
+
+    $p.contents().each((_, node) => {
+      if (node.type === 'text') {
+        const text = $(node).text();
+        if (text) {
+          spans.push({ text });
+        }
+      } else if (node.type === 'tag' && node.tagName === 'a') {
+        const $a = $(node);
+        const href = $a.attr('href');
+        const text = $a.text();
+
+        // Wikipedia internal links follow the pattern /wiki/Page_Title
+        // We exclude special namespaces (File:, Category:, etc.) by checking for colons
+        if (href && href.startsWith('/wiki/') && !href.includes(':')) {
+          const title = href.replace('/wiki/', '');
+          spans.push({
+            text,
+            link: decodeURIComponent(title),
+          });
+        } else {
+          // Keep the text of other links (external, special) but remove the link functionality
+          if (text) {
+            spans.push({ text });
+          }
+        }
+      }
+    });
+
+    return this.mergeConsecutiveTextSpans(spans);
+  }
+
+  /**
+   * Clean up spans by merging consecutive plain text segments.
+   */
+  private mergeConsecutiveTextSpans(spans: ArticleSpan[]): ArticleSpan[] {
+    if (spans.length === 0) return [];
+
+    const merged: ArticleSpan[] = [];
+    let current = spans[0];
+
+    for (let i = 1; i < spans.length; i++) {
+      const next = spans[i];
+      if (!current.link && !next.link) {
+        current.text += next.text;
+      } else {
+        merged.push(current);
+        current = next;
       }
     }
-    else if (tagName === 'figure') {
-      const img = node.find('img');
-      if (img.length > 0) {
-        blocks.push({
-          type: 'image',
-          url: img.attr('src'),
-          text: node.find('figcaption').text().trim() || undefined
-        });
-      }
-    }
-  });
+    merged.push(current);
 
-  return blocks;
-};
+    return merged.filter((s) => s.text.trim() !== '' || s.link);
+  }
+}
+
+export const articleCooker = new ArticleCooker();

@@ -6,14 +6,14 @@ export const sanitizeHtml = (rawHtml: string): string => {
   // 1. ELIMINACIÓN TOTAL de lo que no es contenido
   $(
     'script, style, link, meta, noscript, ' +
-    '.infobox, .sidebar, .navbox, .mw-editsection, .reference, .reflist, ' +
-    '.catlinks, #mw-navigation, #footer, .noprint, .ambox, ' +
-    'table, audio, video, .mw-empty-elt'
+      '.infobox, .sidebar, .navbox, .mw-editsection, .reference, .reflist, ' +
+      '.catlinks, #mw-navigation, #footer, .noprint, .ambox, ' +
+      'table, audio, video, .mw-empty-elt',
   ).remove();
 
   // 2. LIMPIEZA DE ESTRUCTURA: Solo dejamos etiquetas de contenido puro
   const allowedTags = ['p', 'h1', 'h2', 'h3', 'h4', 'a', 'img', 'b', 'i', 'ul', 'li'];
-  
+
   $('*').each((_, element) => {
     if (element.type === 'tag' && !allowedTags.includes(element.name)) {
       // Si la etiqueta no está permitida (ej. div, span, section), la "desenvolvemos" dejando su contenido
@@ -25,7 +25,7 @@ export const sanitizeHtml = (rawHtml: string): string => {
   $('*').each((_, element) => {
     const tagName = element.type === 'tag' ? element.name : '';
     const attributes = $(element).attr();
-    
+
     for (const attr in attributes) {
       if (tagName === 'a' && attr === 'href') {
         const href = attributes[attr];

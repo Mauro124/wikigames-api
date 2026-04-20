@@ -17,7 +17,7 @@ export class FirestoreResultsRepository
 
   async findByChallenge(challengeId: string): Promise<GameResult[]> {
     const snapshot = await this.collection.where('challengeId', '==', challengeId).get();
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as GameResult);
+    return snapshot.docs.map((doc) => this.mapDoc(doc.id, doc.data()));
   }
 
   async exists(challengeId: string, userId: string): Promise<boolean> {

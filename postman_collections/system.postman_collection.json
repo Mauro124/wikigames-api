@@ -18,6 +18,20 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Error Example (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/non-existent-route",
+          "host": ["{{base_url}}"],
+          "path": ["non-existent-route"]
+        },
+        "description": "Muestra el nuevo formato de error centralizado (AppError)."
+      },
+      "response": []
     }
   ]
 }

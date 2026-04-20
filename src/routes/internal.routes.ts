@@ -7,6 +7,9 @@ const internalRouter = Router();
 // Protect all internal routes
 internalRouter.use(authMiddleware);
 
-internalRouter.post('/challenges/generate', internalChallengeController.generate);
+internalRouter.post(
+  '/challenges/generate',
+  internalChallengeController.generateMonthlyBatch.bind(internalChallengeController),
+);
 
 export { internalRouter };

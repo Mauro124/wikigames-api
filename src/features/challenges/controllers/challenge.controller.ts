@@ -9,14 +9,14 @@ export class ChallengeController {
 
     try {
       let challenge = await challengesRepository.findById(today);
-      
+
       if (!challenge) {
         logger.warn({ msg: 'Challenge for today not found, searching for latest', today });
         const snapshot = await (challengesRepository as any).collection
           .orderBy('createdAt', 'desc')
           .limit(1)
           .get();
-          
+
         if (!snapshot.empty) {
           const doc = snapshot.docs[0];
           challenge = { id: doc.id, ...doc.data() };
@@ -38,7 +38,7 @@ export class ChallengeController {
         .orderBy('createdAt', 'desc')
         .limit(30)
         .get();
-        
+
       const challenges = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
       res.status(200).json(challenges);
     } catch (error) {

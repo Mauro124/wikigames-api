@@ -130,4 +130,14 @@ Initial validation through developer "Alpha" playtests to verify article cooking
 
 ## Project Context Baseline Updates
 
-- [Initial PRD creation based on existing backend entities and use cases.]
+- **Completed E001**: Established foundational architecture and infrastructure baseline.
+- **Completed E002**: Implemented Wikipedia Article Proxy with "Article Cooking" logic and caching.
+- **Completed E003**: Unified Firestore persistence layer with atomic stats aggregation.
+- **Completed E004**: Automated monthly challenge generation (300 items/month) with thematic daily categories and BFS reachability verification.
+- **Observability**: Standardized on `pino-http` for structured logging and trace correlation (`reqId`).
+
+
+
+- **Data Model**: Implemented `BaseEntity` and `BaseFirestoreRepository` to unify persistence across all subsequent features.
+- **Error Handling**: Standardized on `AppError` and centralized global middleware using Express 5.x async support.
+

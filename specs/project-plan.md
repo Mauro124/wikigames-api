@@ -9,14 +9,16 @@
 ### Wave 1 — Foundation & Core Logic
 > Establishes the architectural backbone and the "Article Cooking" engine.
 
-- [ ] E001 [P1] [TECHNICAL] [P] {SAD:ADR-0001} Base Feature-Sliced Backend — setup shared infra and layers
-- [ ] E002 [P1] [PRODUCT] [P] {PRD:CAP-002} Wikipedia Article Proxy — implement "Article Cooking" and sanitization logic
+- [X] E001 [P1] [TECHNICAL] [P] {SAD:ADR-0001} Base Feature-Sliced Backend — setup shared infra and layers
+- [X] E002 [P1] [PRODUCT] [P] {PRD:CAP-002} Wikipedia Article Proxy — implement "Article Cooking" and sanitization logic
+
 
 ### Wave 2 — Game Loop & Storage
 > Implements the persistence layer and the primary game cycle.
 
-- [ ] E003 [P1] [TECHNICAL] [P] {SAD:ADR-0001} Firestore Data Integration — implement repository adapters and base models
-- [ ] E004 [P1] [PRODUCT] {PRD:CAP-001,SAD:ADR-0002} Monthly Challenge Generation — implement batch generation and reachability loop
+- [X] E003 [P1] [TECHNICAL] [P] {SAD:ADR-0001} Firestore Data Integration — implement repository adapters and base models
+- [X] E004 [P1] [PRODUCT] {PRD:CAP-001,SAD:ADR-0002} Monthly Challenge Generation — implement batch generation and reachability loop
+
 
 ### Wave 3 — Social & Analytics
 > Finalizes the MVP with results tracking and shareability features.
@@ -55,9 +57,9 @@ graph LR
 - **Scope**: Initialize the Express server with Helmet, CORS, and Pino. Implement the shared directory structure (`/src/shared`) and base classes for the feature-sliced architecture.
 - **Key Entities**: Shared Interfaces, Error Handler
 - **Acceptance Criteria**:
-  - [ ] Express server running with security middleware
-  - [ ] Folder structure follows SAD ADR-0001
-  - [ ] Global error handler and logger functional
+  - [X] Express server running with security middleware
+  - [X] Folder structure follows SAD ADR-0001
+  - [X] Global error handler and logger functional
 
 ### E002: Wikipedia Article Proxy
 - **Category**: PRODUCT | **Priority**: P1
@@ -65,9 +67,10 @@ graph LR
 - **Scope**: Implement the "Article Cooking" domain service using Cheerio. Fetch raw HTML from Wikipedia, strip non-article links/images, and rewrite internal links for game use. Integrate `node-cache`.
 - **Key Entities**: Article, ArticleBlock, ArticleCooker
 - **Acceptance Criteria**:
-  - [ ] Wikipedia articles fetched and cached
-  - [ ] HTML sanitized (no external links, no UI clutter)
-  - [ ] Internal links rewritten to point back to the proxy endpoint
+  - [X] Wikipedia articles fetched and cached
+  - [X] HTML sanitized (no external links, no UI clutter)
+  - [X] Internal links rewritten to point back to the proxy endpoint
+
 
 ### E003: Firestore Data Integration
 - **Category**: TECHNICAL | **Priority**: P1
@@ -75,9 +78,10 @@ graph LR
 - **Scope**: Configure Firebase Admin SDK and implement base Firestore repository. Create specific repository adapters for Articles, Challenges, and Results.
 - **Key Entities**: BaseRepository, FirestoreAdapters
 - **Acceptance Criteria**:
-  - [ ] Firestore connection established
-  - [ ] Base CRUD operations functional for feature repositories
-  - [ ] Repository interfaces decoupled from Firestore implementation
+  - [X] Firestore connection established
+  - [X] Base CRUD operations functional for feature repositories
+  - [X] Repository interfaces decoupled from Firestore implementation
+
 
 ### E004: Monthly Challenge Generation
 - **Category**: PRODUCT | **Priority**: P1
@@ -85,9 +89,10 @@ graph LR
 - **Scope**: Implement the monthly batch generator. Select random article pairs and run a reachability verification loop (BFS) to ensure paths are solvable. Save challenges with `YYYY-MM-DD` IDs.
 - **Key Entities**: Challenge, ChallengeGenerator
 - **Acceptance Criteria**:
-  - [ ] Endpoint for monthly generation functional
-  - [ ] Reachability loop validates paths (max 6 clicks)
-  - [ ] Challenges saved correctly for the upcoming month
+  - [X] Endpoint for monthly generation functional
+  - [X] Reachability loop validates paths (max 6 clicks)
+  - [X] Challenges saved correctly for the upcoming month
+
 
 ### E005: Results & Global Stats
 - **Category**: PRODUCT | **Priority**: P1
