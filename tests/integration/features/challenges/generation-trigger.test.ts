@@ -6,7 +6,11 @@ jest.mock('../../../../src/features/challenges/domain/generate-challenge.usecase
 
 describe('Internal Challenge Generation API', () => {
   afterAll((done) => {
-    server.close(done);
+    if (server.listening) {
+      server.close(done);
+    } else {
+      done();
+    }
   });
 
   it('should trigger monthly generation in background', async () => {

@@ -3,7 +3,11 @@ import { app, server } from '../../../src/index';
 
 describe('Server Infrastructure', () => {
   afterAll((done) => {
-    server.close(done);
+    if (server.listening) {
+      server.close(done);
+    } else {
+      done();
+    }
   });
 
   it('should have security headers (Helmet)', async () => {

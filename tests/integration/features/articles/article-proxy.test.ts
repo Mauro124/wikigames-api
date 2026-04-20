@@ -4,7 +4,11 @@ import { app, server } from '../../../../src/index';
 
 describe('Article Proxy Integration', () => {
   afterAll((done) => {
-    server.close(done);
+    if (server.listening) {
+      server.close(done);
+    } else {
+      done();
+    }
   });
 
   afterEach(() => {
