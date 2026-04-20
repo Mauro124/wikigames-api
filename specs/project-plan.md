@@ -100,9 +100,9 @@ graph LR
 - **Scope**: Implement result submission logic (clicks, time, path). Create daily stats aggregation to calculate averages and distributions per challenge.
 - **Key Entities**: Result, DailyStats
 - **Acceptance Criteria**:
-  - [ ] Users can submit valid game results
-  - [ ] Global stats calculated and served for each challenge
-  - [ ] Aggregation logic handles concurrent submissions
+  - [X] Users can submit valid game results
+  - [X] Global stats calculated and served for each challenge
+  - [X] Aggregation logic handles concurrent submissions
 
 ### E006: Emoji Path Share Visualizer
 - **Category**: PRODUCT | **Priority**: P2

@@ -16,7 +16,7 @@ export const verifyAuth = async (req: AuthRequest, res: Response, next: NextFunc
     const decodedToken = await admin.auth().verifyIdToken(token);
     req.user = decodedToken;
     next();
-  } catch (error) {
+  } catch (_error) {
     return res.status(401).json({ status: 'error', message: 'Invalid token' });
   }
 };

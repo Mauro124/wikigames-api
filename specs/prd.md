@@ -134,6 +134,7 @@ Initial validation through developer "Alpha" playtests to verify article cooking
 - **Completed E002**: Implemented Wikipedia Article Proxy with "Article Cooking" logic and caching.
 - **Completed E003**: Unified Firestore persistence layer with atomic stats aggregation.
 - **Completed E004**: Automated monthly challenge generation (300 items/month) with thematic daily categories and BFS reachability verification.
+- **Completed E005**: Implemented result submission with duplication checking and real-time atomic global stats aggregation.
 - **Observability**: Standardized on `pino-http` for structured logging and trace correlation (`reqId`).
 
 

@@ -15,11 +15,8 @@ describe('WikipediaFeedService', () => {
       .query(true)
       .reply(200, {
         query: {
-          categorymembers: [
-            { title: 'Article 1' },
-            { title: 'Article 2' }
-          ]
-        }
+          categorymembers: [{ title: 'Article 1' }, { title: 'Article 2' }],
+        },
       });
 
     const members = await wikipediaFeedService.getRandomArticlesFromCategory(lang, 'Science');
@@ -35,13 +32,10 @@ describe('WikipediaFeedService', () => {
         query: {
           pages: {
             '123': {
-              links: [
-                { title: 'Link 1' },
-                { title: 'Link 2' }
-              ]
-            }
-          }
-        }
+              links: [{ title: 'Link 1' }, { title: 'Link 2' }],
+            },
+          },
+        },
       });
 
     const links = await wikipediaFeedService.getLinksForPage(lang, 'Earth');

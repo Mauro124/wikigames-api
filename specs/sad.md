@@ -81,6 +81,7 @@ C4Container
 - **Architecture Strategy**: Enforced Feature-Sliced Design (`domain/data/controllers`) within each feature slice.
 - **Article Proxy**: Implemented `ArticleCooker` domain service using `cheerio` for HTML sanitization and link rewriting. Caching layer uses `node-cache` with 1-hour TTL.
 - **Challenge Generation**: Automated batch generator creates 30 days of content (10 per day) using Wikipedia category members. BFS depth limit of 6 ensures solvability.
+- **Results & Stats**: Added `SubmitResultUseCase` with boundary/duplicate checking and `GetStatsUseCase` with dynamic mean calculation on read.
 - **Data Access**: Unified `BaseFirestoreRepository<T>` pattern. Specific feature repositories (Challenges, Results, Stats) implement domain interfaces and use deterministic IDs and atomic increments.
 
 - **Error Handling**: Standardized `AppError` class and 4-argument global error middleware leveraging Express 5.x native async support.

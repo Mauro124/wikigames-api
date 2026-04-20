@@ -53,9 +53,9 @@ describe('SubmitResultUseCase', () => {
   });
 
   it('should reject clicks < 1', async () => {
-    await expect(
-      submitResultUseCase.execute({ ...validResult, clicks: 0 } as any),
-    ).rejects.toThrow(AppError);
+    await expect(submitResultUseCase.execute({ ...validResult, clicks: 0 } as any)).rejects.toThrow(
+      AppError,
+    );
   });
 
   it('should reject timeSeconds < 1', async () => {

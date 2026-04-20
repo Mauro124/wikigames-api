@@ -46,10 +46,7 @@ export class ArticleCooker {
   /**
    * Parses a paragraph element into ArticleSpans, identifying and rewriting internal links.
    */
-  private parseParagraph(
-    $p: cheerio.Cheerio<any>,
-    $: cheerio.CheerioAPI,
-  ): ArticleSpan[] {
+  private parseParagraph($p: cheerio.Cheerio<any>, $: cheerio.CheerioAPI): ArticleSpan[] {
     const spans: ArticleSpan[] = [];
 
     $p.contents().each((_, node) => {
