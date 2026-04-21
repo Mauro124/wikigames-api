@@ -5,6 +5,7 @@ import { internalRouter } from '@routes/internal.routes';
 import { resultRouter } from './result.routes';
 import { statsRouter } from './stats.routes';
 import categoryRouter from './category.routes';
+import { userRouter } from '@features/users/user.routes';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/internal', internalRouter);
 router.use('/results', resultRouter);
 router.use('/challenges', statsRouter);
 router.use('/categories', categoryRouter);
+router.use('/users', userRouter);
 
 export { router };

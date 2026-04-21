@@ -44,14 +44,14 @@ export class ShareVisualizer {
     // We represent the steps (clicks) between the start and end circles.
     // e.g., 2 clicks: 🔵 🟩 🟩 🔵
 
-    let midSection = '';
+    let midSection: string;
 
     if (pathLength <= 25) {
-        midSection = Array(pathLength).fill(pathEmoji).join(' ');
+      midSection = Array(pathLength).fill(pathEmoji).join(' ');
     } else {
-        const startPart = Array(10).fill(pathEmoji).join(' ');
-        const endPart = Array(10).fill(pathEmoji).join(' ');
-        midSection = `${startPart} ... ${endPart}`;
+      const startPart = Array(10).fill(pathEmoji).join(' ');
+      const endPart = Array(10).fill(pathEmoji).join(' ');
+      midSection = `${startPart} ... ${endPart}`;
     }
     return `${START_END_EMOJI} ${midSection} ${START_END_EMOJI}`;
   }

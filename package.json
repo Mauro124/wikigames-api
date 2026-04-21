@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@multiavatar/multiavatar": "^1.0.7",
     "axios": "^1.15.0",
     "cheerio": "^1.2.0",
     "cors": "^2.8.6",

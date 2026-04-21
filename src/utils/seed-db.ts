@@ -7,10 +7,11 @@ async function seed() {
 
   const initialChallenge = {
     id: today,
-    startTitle: 'Earth',
-    endTitle: 'Philosophy',
     lang: 'en',
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    category: 'Seed',
+    challenges: [{ startTitle: 'Earth', endTitle: 'Philosophy' }],
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   try {
