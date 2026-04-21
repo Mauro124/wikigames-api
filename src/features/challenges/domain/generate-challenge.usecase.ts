@@ -19,11 +19,14 @@ export class GenerateChallengeUseCase {
       currentDate.setDate(startDate.getDate() + day);
       const dateId = currentDate.toISOString().split('T')[0];
 
-      // Pick two categories (might be the same if only one exists)
+      // Pick two categories
       const catStartIdx = day % categories.length;
       const catEndIdx = (day + 1) % categories.length;
-      const categoryStart = categories[catStartIdx].name;
-      const categoryEnd = categories[catEndIdx].name;
+      const categoryStartInternal = categories[catStartIdx].name;
+      const categoryEndInternal = categories[catEndIdx].name;
+
+      const categoryStart = categories[catStartIdx].localNames?.[lang] || categoryStartInternal;
+      const categoryEnd = categories[catEndIdx].localNames?.[lang] || categoryEndInternal;
 
       logger.info(
         `Generating challenges for ${dateId} (Lang: ${lang}, Start: ${categoryStart}, End: ${categoryEnd})`,

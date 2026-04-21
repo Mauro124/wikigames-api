@@ -8,9 +8,9 @@ export class CategoryController {
   }
 
   async create(req: Request, res: Response) {
-    const { name } = req.body;
-    await categoriesRepository.create({ name, active: true });
-    res.status(201).json({ name });
+    const { name, localNames } = req.body;
+    await categoriesRepository.create({ name, localNames, active: true });
+    res.status(201).json({ name, localNames });
   }
 }
 export const categoryController = new CategoryController();

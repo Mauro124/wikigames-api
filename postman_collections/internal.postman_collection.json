@@ -63,6 +63,26 @@
         "description": "Crea un desafío específico para una fecha determinada, calculando automáticamente minClicks y dificultad."
       },
       "response": []
+    },
+    {
+      "name": "Migrate Categories (Localization)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-GENERATOR-KEY",
+            "value": "{{generator_key}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/internal/categories/migrate",
+          "host": ["{{base_url}}"],
+          "path": ["internal", "categories", "migrate"]
+        },
+        "description": "Añade traducciones al español a las categorías existentes para habilitar la generación de retos en 'es'."
+      },
+      "response": []
     }
   ]
 }

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { generateChallengeUseCase } from '../domain/generate-challenge.usecase';
 import { createManualChallengeUseCase } from '../domain/create-manual-challenge.usecase';
+import { categoriesRepository } from '../data/firestore-categories.repository';
 import { logger } from '@shared/services/logger.service';
 
 export class InternalChallengeController {
@@ -16,7 +17,6 @@ export class InternalChallengeController {
     try {
       logger.info(`Starting monthly challenge generation from ${start.toISOString()} (Lang: ${lang})`);
 
-      // We run this without awaiting to return a 202 Accepted, as it takes time.
       generateChallengeUseCase
         .generateMonthlyBatch(start, lang)
         .then((total) => logger.info(`Monthly generation complete for ${lang}. Total: ${total}`))
@@ -40,6 +40,34 @@ export class InternalChallengeController {
         status: 'success',
         data: challenge,
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async migrateCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const translationMap: Record<string, string> = {
+      'Science': 'Ciencia', 'History': 'Historia', 'Geography': 'Geografía', 'Politics': 'Política',
+      'Mathematics': 'Matemáticas', 'Law': 'Derecho', 'Philosophy': 'Filosofía', 'Space': 'Espacio',
+      'Music': 'Música', 'Business': 'Negocios', 'Engineering': 'Ingeniería', 'Psychology': 'Psicología',
+      'Biology': 'Biología', 'Physics': 'Física', 'Art': 'Arte', 'Sociology': 'Sociología',
+      'Video games': 'Videojuegos', 'Movies': 'Cine', 'Chemistry': 'Química', 'Medicine': 'Medicina',
+      'Literature': 'Literatura', 'Economics': 'Economía', 'Mythology': 'Mitología', 'Education': 'Educación',
+      'Animals': 'Animales', 'Technology': 'Tecnología', 'Astronomy': 'Astronomía', 'Architecture': 'Arquitectura',
+      'Sports': 'Deportes', 'Food': 'Gastronomía'
+    };
+
+    try {
+      const categories = await categoriesRepository.findAll();
+      let updated = 0;
+      for (const cat of categories) {
+        const es = translationMap[cat.name];
+        if (es) {
+          await categoriesRepository.save({ ...cat, localNames: { en: cat.name, es } });
+          updated++;
+        }
+      }
+      res.json({ message: `Migrated ${updated} categories.` });
     } catch (error) {
       next(error);
     }

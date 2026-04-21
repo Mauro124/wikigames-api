@@ -5,6 +5,11 @@ export class FirestoreCategoriesRepository extends BaseFirestoreRepository<Categ
   constructor() {
     super('categories');
   }
+
+  async save(category: Category): Promise<void> {
+    const { id, ...data } = category;
+    await this.persist(id, data);
+  }
 }
 
 export const categoriesRepository = new FirestoreCategoriesRepository();

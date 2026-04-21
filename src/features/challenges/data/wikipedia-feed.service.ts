@@ -13,12 +13,24 @@ export class WikipediaFeedService {
     limit = 50,
   ): Promise<string[]> {
     const url = `https://${lang}.${this.baseUrl}`;
+    
+    // Common category prefixes by language
+    const prefixes: Record<string, string> = {
+      en: 'Category',
+      es: 'Categoría',
+      fr: 'Catégorie',
+      de: 'Kategorie',
+      pt: 'Categoria',
+    };
+    const prefix = prefixes[lang] || 'Category';
+    const cmtitle = category.includes(':') ? category : `${prefix}:${category}`;
+
     try {
       const response = await axios.get(url, {
         params: {
           action: 'query',
           list: 'categorymembers',
-          cmtitle: `Category:${category}`,
+          cmtitle: cmtitle,
           cmlimit: limit,
           cmnamespace: 0, // Only articles
           format: 'json',
@@ -35,7 +47,7 @@ export class WikipediaFeedService {
       }
 
       const members = data.query.categorymembers;
-      return members.map((m: any) => m.title);
+      return (members || []).map((m: any) => m.title);
     } catch (error: any) {
       if (error instanceof AppError) throw error;
       throw new AppError(`Failed to fetch category members: ${error.message}`, 500);
