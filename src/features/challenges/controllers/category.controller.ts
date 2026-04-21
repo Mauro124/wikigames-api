@@ -9,7 +9,7 @@ export class CategoryController {
 
   async create(req: Request, res: Response) {
     const { name } = req.body;
-    await categoriesRepository.save({ id: name, name, active: true });
+    await categoriesRepository.create({ name, active: true });
     res.status(201).json({ name });
   }
 }

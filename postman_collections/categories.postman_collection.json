@@ -1,0 +1,44 @@
+{
+  "info": {
+    "_postman_id": "8939C09E-D6A8-4D46-9761-F3721345999E",
+    "name": "WikiGames - Categories",
+    "description": "Gestión de categorías para generación de desafíos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "List Categories",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/categories",
+          "host": ["{{base_url}}"],
+          "path": ["categories"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Category",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Science\",\n    \"active\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/categories",
+          "host": ["{{base_url}}"],
+          "path": ["categories"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
