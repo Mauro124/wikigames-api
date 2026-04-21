@@ -1,5 +1,4 @@
 import { challengesRepository } from '@features/challenges/data/firestore-challenges.repository';
-import { admin } from '@config/firebase.config';
 import { logger } from '@shared/services/logger.service';
 
 async function seed() {

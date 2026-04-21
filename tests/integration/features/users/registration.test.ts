@@ -2,6 +2,10 @@ import request from 'supertest';
 import { app, server } from '../../../../src/index';
 import { db } from '../../../../src/config/firebase.config';
 
+const mockAuth = {
+  verifyIdToken: jest.fn().mockResolvedValue({ uid: 'test-uid', email: 'test@example.com' }),
+};
+
 // Mock Firebase Config globally
 jest.mock('../../../../src/config/firebase.config', () => ({
   db: {
@@ -12,9 +16,7 @@ jest.mock('../../../../src/config/firebase.config', () => ({
     set: jest.fn(),
   },
   admin: {
-    auth: () => ({
-      verifyIdToken: jest.fn().mockResolvedValue({ uid: 'test-uid' }),
-    }),
+    auth: () => mockAuth,
     firestore: {
       FieldValue: {
         serverTimestamp: jest.fn(),
@@ -62,9 +64,25 @@ describe('POST /users (Registration)', () => {
     expect(response.status).toBe(201);
     expect(response.body.status).toBe('success');
     expect(response.body.data.username).toBe(mockUsername);
+    expect(response.body.data.email).toBe('test@example.com');
     expect(response.body.data.id).toBe('test-uid');
     expect(response.body.data.avatarSvg).toBeDefined();
     expect(response.body.data.avatarSvg).toContain('<svg');
+  });
+
+  it('should return 401 if email is missing from token', async () => {
+    const mockUsername = 'test_user';
+
+    // Mock token without email
+    mockAuth.verifyIdToken.mockResolvedValueOnce({ uid: 'test-uid' });
+
+    const response = await request(app)
+      .post('/users')
+      .set('Authorization', 'Bearer valid-token')
+      .send({ username: mockUsername });
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe('Unauthorized or missing email in token');
   });
 
   it('should return 400 if username is taken', async () => {

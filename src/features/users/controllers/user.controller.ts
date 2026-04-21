@@ -29,8 +29,10 @@ export class UserController {
     }
 
     const uid = req.user?.uid;
-    if (!uid) {
-      res.status(401).json({ status: 'error', message: 'Unauthorized' });
+    const email = req.user?.email;
+
+    if (!uid || !email) {
+      res.status(401).json({ status: 'error', message: 'Unauthorized or missing email in token' });
       return;
     }
 
@@ -38,6 +40,7 @@ export class UserController {
       const user = await registerUserUseCase.execute({
         id: uid,
         username: req.body.username,
+        email,
       });
 
       res.status(201).json({

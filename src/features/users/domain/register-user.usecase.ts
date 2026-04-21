@@ -7,14 +7,15 @@ import { logger } from '@shared/services/logger.service';
 export interface RegisterUserDto {
   id: string; // Firebase UID
   username: string;
+  email: string;
 }
 
 export class RegisterUserUseCase {
   async execute(dto: RegisterUserDto): Promise<User> {
-    const { id, username } = dto;
+    const { id, username, email } = dto;
 
-    if (!id || !username) {
-      throw new AppError('id and username are required', 400);
+    if (!id || !username || !email) {
+      throw new AppError('id, username and email are required', 400);
     }
 
     const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
@@ -35,6 +36,7 @@ export class RegisterUserUseCase {
     const newUser: User = {
       id,
       username,
+      email,
       avatarSvg,
       createdAt: new Date(),
       updatedAt: new Date(),
