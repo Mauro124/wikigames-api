@@ -7,15 +7,23 @@ export class ArticleCooker {
    */
   cook(html: string): ArticleBlock[] {
     const $ = cheerio.load(html);
-    const content = $('#mw-content-text .mw-parser-output');
+    // Try different selectors as Wikipedia structure can vary by language or parsing mode
+    let content = $('#mw-content-text .mw-parser-output');
+    if (content.length === 0) {
+      content = $('.mw-parser-output');
+    }
+    if (content.length === 0) {
+      content = $('#mw-content-text');
+    }
+
     const blocks: ArticleBlock[] = [];
+    
+    // Cast to any to bypass strict Cheerio Element/Document this-context mismatch in TypeScript
+    const searchTarget: any = content.length > 0 ? content : $.root();
 
-    // If the expected structure is missing, try a broader search within the content text
-    const target = content.length > 0 ? content : $('#mw-content-text');
-
-    target.children().each((_, el) => {
+    searchTarget.find('h1, h2, h3, p').each((_: number, el: any) => {
       const $el = $(el);
-      const tagName = el.tagName.toLowerCase();
+      const tagName = el.name.toLowerCase();
 
       if (['h1', 'h2', 'h3'].includes(tagName)) {
         const text = $el
@@ -55,24 +63,28 @@ export class ArticleCooker {
         if (text) {
           spans.push({ text });
         }
-      } else if (node.type === 'tag' && node.tagName === 'a') {
+      } else if (node.type === 'tag' && (node as any).name === 'a') {
         const $a = $(node);
         const href = $a.attr('href');
         const text = $a.text();
 
-        // Wikipedia internal links follow the pattern /wiki/Page_Title
+        // Wikipedia internal links follow the pattern /wiki/Page_Title or ./Page_Title (REST API)
         // We exclude special namespaces (File:, Category:, etc.) by checking for colons
-        if (href && href.startsWith('/wiki/') && !href.includes(':')) {
-          const title = href.replace('/wiki/', '');
-          spans.push({
-            text,
-            link: decodeURIComponent(title),
-          });
-        } else {
-          // Keep the text of other links (external, special) but remove the link functionality
-          if (text) {
+        if (href && !href.includes(':')) {
+          let title = '';
+          if (href.startsWith('/wiki/')) title = href.replace('/wiki/', '');
+          else if (href.startsWith('./')) title = href.replace('./', '');
+
+          if (title) {
+            spans.push({
+              text,
+              link: decodeURIComponent(title),
+            });
+          } else if (text) {
             spans.push({ text });
           }
+        } else if (text) {
+          spans.push({ text });
         }
       }
     });

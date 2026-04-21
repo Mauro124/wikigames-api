@@ -7,8 +7,9 @@ async function seed() {
   const initialChallenge = {
     id: today,
     lang: 'en',
-    category: 'Seed',
-    challenges: [{ startTitle: 'Earth', endTitle: 'Philosophy' }],
+    categoryStart: 'Seed',
+    categoryEnd: 'Seed',
+    challenges: [{ id: 1, startTitle: 'Earth', endTitle: 'Philosophy', minClicks: 3, difficulty: 'Easy' as const }],
     createdAt: new Date(),
     updatedAt: new Date(),
   };

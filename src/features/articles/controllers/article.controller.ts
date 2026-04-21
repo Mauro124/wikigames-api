@@ -1,28 +1,20 @@
-import { Request, Response } from 'express';
-import NodeCache from 'node-cache';
+import { Request, Response, NextFunction } from 'express';
 import { getArticleUseCase } from '../domain/get-article.usecase';
-import { logger } from '@shared/services/logger.service';
-
-// Cache TTL: 1 hour (3600 seconds)
-const articleCache = new NodeCache({ stdTTL: 3600 });
 
 export class ArticleController {
-  async getArticle(req: Request, res: Response): Promise<void> {
+  /**
+   * Delegates fetching and caching (ETags) to UseCase and Service.
+   */
+  async getArticle(req: Request, res: Response, next: NextFunction): Promise<void> {
     const lang = req.params.lang as string;
     const title = req.params.title as string;
-    const cacheKey = `${lang}:${title}`;
 
-    const cachedArticle = articleCache.get(cacheKey);
-    if (cachedArticle) {
-      logger.debug(`Cache hit for article: ${cacheKey}`);
-      res.json({ ...(cachedArticle as object), cached: true });
-      return;
+    try {
+      const article = await getArticleUseCase.execute(lang, title);
+      res.json(article);
+    } catch (error) {
+      next(error);
     }
-
-    const article = await getArticleUseCase.execute(lang, title);
-    articleCache.set(cacheKey, article);
-
-    res.json(article);
   }
 }
 
