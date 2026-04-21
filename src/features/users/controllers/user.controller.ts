@@ -3,6 +3,7 @@ import { validationResult, body } from 'express-validator';
 import { registerUserUseCase } from '../domain/register-user.usecase';
 import { getUserUseCase } from '../domain/get-user.usecase';
 import { updateUserUseCase } from '../domain/update-user.usecase';
+import { userRepository } from '../data/firestore-user.repository';
 import { AuthRequest } from '@middleware/verify-auth.middleware';
 
 export class UserController {
@@ -61,6 +62,40 @@ export class UserController {
       res.status(200).json({
         status: 'success',
         data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getStats(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    const uid = req.params.uid as string;
+
+    try {
+      const user = await getUserUseCase.execute(uid);
+
+      res.status(200).json({
+        status: 'success',
+        data: user.stats,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getLeaderboard(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const users = await userRepository.getLeaderboard(50);
+      const data = users.map((u) => ({
+        username: u.username,
+        avatarSvg: u.avatarSvg,
+        totalScore: u.stats.totalScore,
+        longestStreak: u.stats.longestStreak,
+      }));
+
+      res.status(200).json({
+        status: 'success',
+        data,
       });
     } catch (error) {
       next(error);

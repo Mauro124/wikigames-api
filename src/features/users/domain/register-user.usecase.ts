@@ -38,6 +38,15 @@ export class RegisterUserUseCase {
       username,
       email,
       avatarSvg,
+      stats: {
+        currentStreak: 0,
+        longestStreak: 0,
+        bestTimeSeconds: null,
+        bestClicks: null,
+        totalGames: 0,
+        totalScore: 0,
+        lastPlayedDate: null,
+      },
       createdAt: new Date(),
       updatedAt: new Date(),
     };

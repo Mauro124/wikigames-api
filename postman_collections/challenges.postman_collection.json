@@ -12,30 +12,43 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/challenges/today",
+					"raw": "{{base_url}}/challenges/today?lang=en",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"challenges",
 						"today"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "en",
+							"description": "Idioma del desafío (en, es, etc.)"
+						}
 					]
 				}
 			},
 			"response": [
 				{
-					"name": "Success",
+					"name": "Success (English)",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/challenges/today",
+							"raw": "{{base_url}}/challenges/today?lang=en",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"challenges",
 								"today"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "en"
+								}
 							]
 						}
 					},
@@ -45,6 +58,35 @@
 					"header": [],
 					"cookie": [],
 					"body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"en\",\n    \"categoryStart\": \"Science\",\n    \"categoryEnd\": \"History\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"DNA\",\n            \"endTitle\": \"Napoleon\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:00:00.000Z\"\n}"
+				},
+				{
+					"name": "Success (Spanish)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/challenges/today?lang=es",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"challenges",
+								"today"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "es"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"es\",\n    \"categoryStart\": \"Ciencia\",\n    \"categoryEnd\": \"Historia\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"ADN\",\n            \"endTitle\": \"Napoleón\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:05:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:05:00.000Z\"\n}"
 				}
 			]
 		},
@@ -54,12 +96,19 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/challenges",
+					"raw": "{{base_url}}/challenges?lang=en",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"challenges"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "en",
+							"description": "Idioma de los desafíos"
+						}
 					]
 				}
 			},

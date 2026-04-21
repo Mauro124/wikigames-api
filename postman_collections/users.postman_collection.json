@@ -38,6 +38,49 @@
 			"response": []
 		},
 		{
+			"name": "Get Leaderboard",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/users/leaderboard",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"leaderboard"
+					]
+				},
+				"description": "Obtiene los 50 mejores jugadores basados en su puntaje total."
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/leaderboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"leaderboard"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"username\": \"top_player\",\n            \"avatarSvg\": \"<svg>...</svg>\",\n            \"totalScore\": 15000,\n            \"longestStreak\": 14\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
 			"name": "Get User Profile",
 			"request": {
 				"method": "GET",
@@ -59,7 +102,93 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/:uid",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								":uid"
+							],
+							"variable": [
+								{
+									"key": "uid",
+									"value": "test-uid"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": \"test-uid\",\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\",\n        \"avatarSvg\": \"<svg>...</svg>\",\n        \"stats\": {\n            \"currentStreak\": 1,\n            \"longestStreak\": 1,\n            \"bestTimeSeconds\": 45,\n            \"bestClicks\": 5,\n            \"totalGames\": 1,\n            \"totalScore\": 730,\n            \"lastPlayedDate\": \"2026-04-21\"\n        },\n        \"createdAt\": \"2026-04-21T12:00:00.000Z\",\n        \"updatedAt\": \"2026-04-21T12:00:00.000Z\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get User Stats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/users/:uid/stats",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						":uid",
+						"stats"
+					],
+					"variable": [
+						{
+							"key": "uid",
+							"value": "test-uid"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/:uid/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								":uid",
+								"stats"
+							],
+							"variable": [
+								{
+									"key": "uid",
+									"value": "test-uid"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"currentStreak\": 1,\n        \"longestStreak\": 1,\n        \"bestTimeSeconds\": 45,\n        \"bestClicks\": 5,\n        \"totalGames\": 1,\n        \"totalScore\": 730,\n        \"lastPlayedDate\": \"2026-04-21\"\n    }\n}"
+				}
+			]
 		},
 		{
 			"name": "Update My Profile",

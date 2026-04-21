@@ -19,7 +19,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"startDate\": \"2024-06-01\"\n}",
+          "raw": "{\n    \"startDate\": \"2024-06-01\",\n    \"lang\": \"es\"\n}",
           "options": {
             "raw": {
               "language": "json"

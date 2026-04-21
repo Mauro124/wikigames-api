@@ -6,4 +6,5 @@ export interface UserRepository {
   create(user: User): Promise<User>;
   update(id: string, user: Partial<User>): Promise<User>;
   isUsernameUnique(username: string): Promise<boolean>;
+  getLeaderboard(limit: number): Promise<User[]>;
 }

@@ -27,6 +27,16 @@ export class FirestoreUserRepository
     await this.persist(id, data);
     return user;
   }
+
+  async getLeaderboard(limitCount: number): Promise<User[]> {
+    const snapshot = await this.collection
+      .where('stats.totalGames', '>', 0)
+      .orderBy('stats.totalScore', 'desc')
+      .limit(limitCount)
+      .get();
+
+    return snapshot.docs.map((doc) => this.mapDoc(doc.id, doc.data()));
+  }
 }
 
 export const userRepository = new FirestoreUserRepository();

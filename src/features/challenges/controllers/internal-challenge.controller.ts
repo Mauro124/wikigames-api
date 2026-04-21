@@ -5,7 +5,7 @@ import { logger } from '@shared/services/logger.service';
 
 export class InternalChallengeController {
   async generateMonthlyBatch(req: Request, res: Response): Promise<void> {
-    const { startDate } = req.body;
+    const { startDate, lang = 'en' } = req.body;
     const start = startDate ? new Date(startDate) : new Date();
 
     if (isNaN(start.getTime())) {
@@ -14,18 +14,18 @@ export class InternalChallengeController {
     }
 
     try {
-      logger.info(`Starting monthly challenge generation from ${start.toISOString()}`);
+      logger.info(`Starting monthly challenge generation from ${start.toISOString()} (Lang: ${lang})`);
 
       // We run this without awaiting to return a 202 Accepted, as it takes time.
-      // In a real prod environment, this should be a background job.
       generateChallengeUseCase
-        .generateMonthlyBatch(start)
-        .then((total) => logger.info(`Monthly generation complete. Total: ${total}`))
-        .catch((err) => logger.error(`Monthly generation failed: ${err.message}`));
+        .generateMonthlyBatch(start, lang)
+        .then((total) => logger.info(`Monthly generation complete for ${lang}. Total: ${total}`))
+        .catch((err) => logger.error(`Monthly generation failed for ${lang}: ${err.message}`));
 
       res.status(202).json({
         message: 'Generation started in background.',
         startDate: start.toISOString().split('T')[0],
+        lang,
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });

@@ -2,6 +2,7 @@ import { GameResult } from './result.entity';
 import { resultsRepository } from '../data/firestore-results.repository';
 import { statsRepository } from '@features/stats/data/firestore-stats.repository';
 import { getStatsUseCase } from '@features/stats/domain/get-stats.usecase';
+import { updateUserStatsUseCase } from '@features/users/domain/update-user-stats.usecase';
 import { shareVisualizer } from '../utils/share-visualizer';
 import { logger } from '@shared/services/logger.service';
 import { AppError } from '@shared/domain/app-error';
@@ -36,6 +37,14 @@ export class SubmitResultUseCase {
 
     await resultsRepository.save(result);
     await statsRepository.incrementStats(challengeId, clicks, timeSeconds);
+
+    // Update user persistent stats (streak, records)
+    await updateUserStatsUseCase.execute({
+      userId,
+      challengeId,
+      clicks,
+      timeSeconds,
+    });
 
     const stats = await getStatsUseCase.execute(challengeId);
     const avgClicks = stats?.averageClicks || 0;

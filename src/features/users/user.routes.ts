@@ -13,15 +13,30 @@ router.post(
   '/',
   verifyAuth as any,
   userController.validateRegistration,
-  userController.register.bind(userController),
+  userController.register.bind(userController)
 );
 
 /**
+ * @route GET /users/leaderboard
+ * @desc Fetch top players
+ * @access Public
+ */
+router.get('/leaderboard', userController.getLeaderboard.bind(userController));
+
+/**
  * @route GET /users/:uid
+
  * @desc Fetch user profile
  * @access Public
  */
 router.get('/:uid', userController.getProfile.bind(userController));
+
+/**
+ * @route GET /users/:uid/stats
+ * @desc Fetch user statistics
+ * @access Public
+ */
+router.get('/:uid/stats', userController.getStats.bind(userController));
 
 /**
  * @route PATCH /users/me

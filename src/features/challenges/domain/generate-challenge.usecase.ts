@@ -6,11 +6,10 @@ import { logger } from '@shared/services/logger.service';
 
 export class GenerateChallengeUseCase {
   /**
-   * Generates 30 days of challenges (10 per day) starting from a specific date.
+   * Generates 30 days of challenges (10 per day) starting from a specific date and language.
    */
-  async generateMonthlyBatch(startDate: Date): Promise<number> {
+  async generateMonthlyBatch(startDate: Date, lang: string = 'en'): Promise<number> {
     let totalGenerated = 0;
-    const lang = 'en';
 
     const categories = await categoriesRepository.findAll();
     if (categories.length === 0) throw new Error('No categories available');
@@ -27,7 +26,7 @@ export class GenerateChallengeUseCase {
       const categoryEnd = categories[catEndIdx].name;
 
       logger.info(
-        `Generating challenges for ${dateId} (Start: ${categoryStart}, End: ${categoryEnd})`,
+        `Generating challenges for ${dateId} (Lang: ${lang}, Start: ${categoryStart}, End: ${categoryEnd})`,
       );
 
       const poolStart = await wikipediaFeedService.getRandomArticlesFromCategory(
@@ -42,7 +41,7 @@ export class GenerateChallengeUseCase {
       );
 
       if (poolStart.length < 1 || poolEnd.length < 1) {
-        logger.warn(`Pool for day ${dateId} too small. Skipping.`);
+        logger.warn(`Pool for day ${dateId} (${lang}) too small. Skipping.`);
         continue;
       }
 
@@ -84,9 +83,9 @@ export class GenerateChallengeUseCase {
 
           await challengesRepository.save(challenge);
           totalGenerated += challengesForDay.length;
-          logger.info(`Finished ${dateId}: ${challengesForDay.length} challenges generated.`);
+          logger.info(`Finished ${dateId} (${lang}): ${challengesForDay.length} challenges generated.`);
         } catch (error) {
-          logger.error({ msg: 'Failed to save daily challenges', dateId, error });
+          logger.error({ msg: 'Failed to save daily challenges', dateId, lang, error });
         }
       }
     }

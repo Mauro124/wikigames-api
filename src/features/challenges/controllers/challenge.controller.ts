@@ -1,46 +1,42 @@
 import { Request, Response, NextFunction } from 'express';
 import { challengesRepository } from '../data/firestore-challenges.repository';
-import { logger } from '@shared/services/logger.service';
 
 export class ChallengeController {
-  async getToday(req: Request, res: Response, next: NextFunction) {
+  /**
+   * Returns the challenge(s) for the current day based on language.
+   */
+  async getToday(req: Request, res: Response, next: NextFunction): Promise<void> {
     const today = new Date().toISOString().split('T')[0];
-    logger.info({ msg: 'Requesting challenge for today', today });
+    const lang = (req.query.lang as string) || 'en';
 
     try {
-      let challenge = await challengesRepository.findById(today);
+      const challenge = await challengesRepository.findByIdAndLang(today, lang);
 
       if (!challenge) {
-        logger.warn({ msg: 'Challenge for today not found, searching for latest', today });
-        const snapshot = await (challengesRepository as any).collection
-          .orderBy('createdAt', 'desc')
-          .limit(1)
-          .get();
-
-        if (!snapshot.empty) {
-          const doc = snapshot.docs[0];
-          challenge = { id: doc.id, ...doc.data() };
-        }
+        res.status(404).json({
+          status: 'error',
+          message: `No challenge found for today (${today}) in language "${lang}"`,
+        });
+        return;
       }
 
-      if (!challenge) {
-        return res.status(404).json({ status: 'error', message: 'No challenges found' });
-      }
       res.status(200).json(challenge);
     } catch (error) {
       next(error);
     }
   }
 
-  async list(req: Request, res: Response, next: NextFunction) {
+  /**
+   * Returns a list of recent daily challenges for a specific language.
+   */
+  async list(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const lang = (req.query.lang as string) || 'en';
     try {
-      const snapshot = await (challengesRepository as any).collection
-        .orderBy('createdAt', 'desc')
-        .limit(30)
-        .get();
+      const challenges = await challengesRepository.findAllByLang(lang);
+      // Sort by ID (date) descending and take last 7
+      const recent = challenges.sort((a, b) => b.id.localeCompare(a.id)).slice(0, 7);
 
-      const challenges = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-      res.status(200).json(challenges);
+      res.status(200).json(recent);
     } catch (error) {
       next(error);
     }
