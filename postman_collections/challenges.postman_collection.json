@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "D2E3F4G5-H6I7-J8K9-L0M1-N2O3P4Q5R6S7",
+		"name": "WikiGames - Challenges",
+		"description": "Endpoints públicos para la consulta de desafíos diarios.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Today's Challenge",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/challenges/today",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"challenges",
+						"today"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Recent Challenges",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/challenges",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"challenges"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Challenge Stats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/challenges/:id/stats",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"challenges",
+						":id",
+						"stats"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "2024-05-24"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

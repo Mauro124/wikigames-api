@@ -1,0 +1,36 @@
+{
+	"info": {
+		"_postman_id": "E3F4G5H6-I7J8-K9L0-M1N2-O3P4Q5R6S7T8",
+		"name": "WikiGames - Gameplay",
+		"description": "Endpoints relacionados con el desarrollo de la partida y registro de resultados.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Submit Game Result",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"challengeId\": \"2024-05-24\",\n    \"deviceId\": \"user-123\",\n    \"clicks\": 5,\n    \"timeSeconds\": 120,\n    \"path\": [\"Earth\", \"Moon\", \"Philosophy\"]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/results",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"results"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
