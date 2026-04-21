@@ -12,4 +12,9 @@ internalRouter.post(
   internalChallengeController.generateMonthlyBatch.bind(internalChallengeController),
 );
 
+internalRouter.post(
+  '/challenges',
+  internalChallengeController.createManual.bind(internalChallengeController),
+);
+
 export { internalRouter };

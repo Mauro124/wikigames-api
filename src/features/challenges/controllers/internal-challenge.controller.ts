@@ -1,5 +1,6 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { generateChallengeUseCase } from '../domain/generate-challenge.usecase';
+import { createManualChallengeUseCase } from '../domain/create-manual-challenge.usecase';
 import { logger } from '@shared/services/logger.service';
 
 export class InternalChallengeController {
@@ -28,6 +29,19 @@ export class InternalChallengeController {
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
+    }
+  }
+
+  async createManual(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const challenge = await createManualChallengeUseCase.execute(req.body);
+
+      res.status(201).json({
+        status: 'success',
+        data: challenge,
+      });
+    } catch (error) {
+      next(error);
     }
   }
 }

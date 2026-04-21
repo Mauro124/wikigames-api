@@ -22,7 +22,31 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/challenges/today",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"challenges",
+								"today"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"en\",\n    \"categoryStart\": \"Science\",\n    \"categoryEnd\": \"History\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"DNA\",\n            \"endTitle\": \"Napoleon\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:00:00.000Z\"\n}"
+				}
+			]
 		},
 		{
 			"name": "List Recent Challenges",

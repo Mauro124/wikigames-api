@@ -84,7 +84,51 @@ export class WikipediaFeedService {
         if (links.length >= 500) break;
       } while (continueToken);
 
-      return links;
+      return Array.from(new Set(links));
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Fetches all articles linking TO a specific page for backward BFS verification.
+   */
+  async getBacklinksForPage(lang: string, title: string): Promise<string[]> {
+    const url = `https://${lang}.${this.baseUrl}`;
+    const backlinks: string[] = [];
+    let continueToken: string | undefined;
+
+    try {
+      do {
+        const response = await axios.get(url, {
+          params: {
+            action: 'query',
+            list: 'backlinks',
+            bltitle: title,
+            blnamespace: 0,
+            bllimit: 'max',
+            format: 'json',
+            origin: '*',
+            blcontinue: continueToken,
+          },
+          headers: {
+            'User-Agent': 'WikiGameBackend/1.0 (contact@example.com)',
+          },
+        });
+
+        const data = response.data;
+        if (data.error) break;
+
+        const bl = data.query.backlinks;
+        if (bl) {
+          backlinks.push(...bl.map((l: any) => l.title));
+        }
+
+        continueToken = data.continue?.blcontinue;
+        if (backlinks.length >= 500) break;
+      } while (continueToken);
+
+      return Array.from(new Set(backlinks));
     } catch {
       return [];
     }
