@@ -10,4 +10,10 @@ resultRouter.post(
   resultController.submit.bind(resultController),
 );
 
+resultRouter.post(
+  '/surrender',
+  resultController.validateSurrender,
+  resultController.surrender.bind(resultController),
+);
+
 export { resultRouter };

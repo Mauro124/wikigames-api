@@ -33,6 +33,20 @@ describe('SubmitResultUseCase', () => {
     expect(statsRepository.incrementStats).toHaveBeenCalledWith('2024-06-01_0', 5, 60);
   });
 
+  it('should save result but skip incrementStats if isSurrender is true', async () => {
+    (resultsRepository.exists as jest.Mock).mockResolvedValue(false);
+    (resultsRepository.save as jest.Mock).mockResolvedValue(undefined);
+    (statsRepository.incrementStats as jest.Mock).mockResolvedValue(undefined);
+
+    const surrenderResult = { ...validResult, isSurrender: true };
+    const response = await submitResultUseCase.execute(surrenderResult as any);
+
+    expect(response.success).toBe(true);
+    expect(response.shareText).toBeUndefined(); // No share text for surrenders
+    expect(resultsRepository.save).toHaveBeenCalledWith(surrenderResult);
+    expect(statsRepository.incrementStats).not.toHaveBeenCalled();
+  });
+
   it('should return alreadySubmitted if result exists', async () => {
     (resultsRepository.exists as jest.Mock).mockResolvedValue(true);
 

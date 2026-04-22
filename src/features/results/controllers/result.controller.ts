@@ -11,6 +11,11 @@ export class ResultController {
     body('path').isArray({ min: 1 }),
   ];
 
+  validateSurrender = [
+    body('challengeId').isString().notEmpty(),
+    body('userId').isString().notEmpty(),
+  ];
+
   async submit(req: Request, res: Response, next: NextFunction): Promise<void> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -20,6 +25,29 @@ export class ResultController {
 
     try {
       const response = await submitResultUseCase.execute(req.body);
+      res.status(response.alreadySubmitted ? 200 : 201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async surrender(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ status: 'error', errors: errors.array() });
+      return;
+    }
+
+    try {
+      const payload = {
+        ...req.body,
+        clicks: 9999, // Dummy values for completion record
+        timeSeconds: 9999,
+        path: [],
+        isSurrender: true,
+      };
+      
+      const response = await submitResultUseCase.execute(payload);
       res.status(response.alreadySubmitted ? 200 : 201).json(response);
     } catch (error) {
       next(error);

@@ -6,11 +6,12 @@ export interface UpdateStatsDto {
   challengeId: string; // YYYY-MM-DD
   clicks: number;
   timeSeconds: number;
+  isSurrender?: boolean;
 }
 
 export class UpdateUserStatsUseCase {
   async execute(dto: UpdateStatsDto): Promise<void> {
-    const { userId, challengeId, clicks, timeSeconds } = dto;
+    const { userId, challengeId, clicks, timeSeconds, isSurrender } = dto;
 
     const user = await userRepository.findById(userId);
     if (!user) {
@@ -22,14 +23,19 @@ export class UpdateUserStatsUseCase {
     const lastDate = stats.lastPlayedDate;
 
     // Scoring Algorithm (MVP)
-    const basePoints = 500;
-    const efficiencyBonus = Math.floor((100 / clicks) * 10);
-    const speedBonus = Math.floor((300 / timeSeconds) * 5);
-    const raceScore = Math.max(550, basePoints + efficiencyBonus + speedBonus);
+    let raceScore = 0;
+    if (!isSurrender) {
+      const basePoints = 500;
+      const efficiencyBonus = Math.floor((100 / clicks) * 10);
+      const speedBonus = Math.floor((300 / timeSeconds) * 5);
+      raceScore = Math.max(550, basePoints + efficiencyBonus + speedBonus);
+    }
 
     let newStreak = stats.currentStreak;
 
-    if (!lastDate) {
+    if (isSurrender) {
+      newStreak = 0; // Surrendering breaks the streak
+    } else if (!lastDate) {
       newStreak = 1;
     } else {
       const last = new Date(lastDate);
@@ -49,11 +55,16 @@ export class UpdateUserStatsUseCase {
       ...stats,
       currentStreak: newStreak,
       longestStreak: Math.max(stats.longestStreak, newStreak),
-      bestTimeSeconds:
-        stats.bestTimeSeconds === null
-          ? timeSeconds
-          : Math.min(stats.bestTimeSeconds, timeSeconds),
-      bestClicks: stats.bestClicks === null ? clicks : Math.min(stats.bestClicks, clicks),
+      bestTimeSeconds: isSurrender
+        ? stats.bestTimeSeconds
+        : stats.bestTimeSeconds === null
+        ? timeSeconds
+        : Math.min(stats.bestTimeSeconds, timeSeconds),
+      bestClicks: isSurrender
+        ? stats.bestClicks
+        : stats.bestClicks === null
+        ? clicks
+        : Math.min(stats.bestClicks, clicks),
       totalGames: stats.totalGames + 1,
       totalScore: (stats.totalScore || 0) + raceScore,
       lastPlayedDate: challengeId,

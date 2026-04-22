@@ -6,4 +6,5 @@ export interface GameResult extends BaseEntity {
   clicks: number;
   timeSeconds: number;
   path: string[];
+  isSurrender?: boolean;
 }

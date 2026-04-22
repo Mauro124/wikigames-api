@@ -36,7 +36,10 @@ export class SubmitResultUseCase {
     }
 
     await resultsRepository.save(result);
-    await statsRepository.incrementStats(challengeId, clicks, timeSeconds);
+    
+    if (!result.isSurrender) {
+      await statsRepository.incrementStats(challengeId, clicks, timeSeconds);
+    }
 
     // Update user persistent stats (streak, records)
     await updateUserStatsUseCase.execute({
@@ -44,7 +47,13 @@ export class SubmitResultUseCase {
       challengeId,
       clicks,
       timeSeconds,
+      isSurrender: result.isSurrender,
     });
+
+    if (result.isSurrender) {
+      logger.info({ msg: 'User surrendered challenge', challengeId, userId });
+      return { success: true };
+    }
 
     const stats = await getStatsUseCase.execute(challengeId);
     const avgClicks = stats?.averageClicks || 0;

@@ -31,6 +31,33 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Surrender Challenge",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"challengeId\": \"2024-05-24\",\n    \"userId\": \"user-123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/results/surrender",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"results",
+						"surrender"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
