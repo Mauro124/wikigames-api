@@ -1,14 +1,14 @@
 export interface ArticleSpan {
   text: string;
-  link?: string; // Si existe, es un título de Wikipedia
+  link?: string;
 }
 
 export interface ArticleBlock {
   type: 'paragraph' | 'header' | 'image';
-  text?: string; // Para headers
-  url?: string; // Para imágenes
-  spans?: ArticleSpan[]; // Para párrafos (texto con links incrustados)
-  level?: number; // Para headers (1, 2, 3)
+  text?: string;
+  url?: string;
+  spans?: ArticleSpan[];
+  level?: number;
 }
 
 export interface Article {

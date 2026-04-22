@@ -4,9 +4,6 @@ import { AppError } from '@shared/domain/app-error';
 export class WikipediaFeedService {
   private readonly baseUrl = 'wikipedia.org/w/api.php';
 
-  /**
-   * Fetches articles from a specific Wikipedia category.
-   */
   async getRandomArticlesFromCategory(
     lang: string,
     category: string,
@@ -14,7 +11,6 @@ export class WikipediaFeedService {
   ): Promise<string[]> {
     const url = `https://${lang}.${this.baseUrl}`;
     
-    // Common category prefixes by language
     const prefixes: Record<string, string> = {
       en: 'Category',
       es: 'Categoría',
@@ -32,7 +28,7 @@ export class WikipediaFeedService {
           list: 'categorymembers',
           cmtitle: cmtitle,
           cmlimit: limit,
-          cmnamespace: 0, // Only articles
+          cmnamespace: 0,
           format: 'json',
           origin: '*',
         },
@@ -54,9 +50,6 @@ export class WikipediaFeedService {
     }
   }
 
-  /**
-   * Fetches all internal links of a page for BFS verification.
-   */
   async getLinksForPage(lang: string, title: string): Promise<string[]> {
     const url = `https://${lang}.${this.baseUrl}`;
     const links: string[] = [];
@@ -92,7 +85,6 @@ export class WikipediaFeedService {
         }
 
         continueToken = data.continue?.plcontinue;
-        // Limit total links for performance in BFS (max 500 should be enough for reachability check)
         if (links.length >= 500) break;
       } while (continueToken);
 
@@ -102,9 +94,6 @@ export class WikipediaFeedService {
     }
   }
 
-  /**
-   * Fetches all articles linking TO a specific page for backward BFS verification.
-   */
   async getBacklinksForPage(lang: string, title: string): Promise<string[]> {
     const url = `https://${lang}.${this.baseUrl}`;
     const backlinks: string[] = [];

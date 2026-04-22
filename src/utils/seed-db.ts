@@ -15,7 +15,6 @@ async function seed() {
   }
 
   const today = new Date().toISOString().split('T')[0];
-...
 
   const initialChallenge = {
     id: today,
