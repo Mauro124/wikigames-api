@@ -50,9 +50,7 @@ describe('POST /internal/challenges (Manual Creation)', () => {
       lang: 'en',
       categoryStart: 'Science',
       categoryEnd: 'History',
-      challenges: [
-        { startTitle: 'Albert Einstein', endTitle: 'Quantum Mechanics' }
-      ]
+      challenges: [{ startTitle: 'Albert Einstein', endTitle: 'Quantum Mechanics' }],
     };
 
     // Mock BFS (Shortest path = 2)
@@ -82,9 +80,7 @@ describe('POST /internal/challenges (Manual Creation)', () => {
       lang: 'en',
       categoryStart: 'Science',
       categoryEnd: 'History',
-      challenges: [
-        { startTitle: 'A', endTitle: 'B' }
-      ]
+      challenges: [{ startTitle: 'A', endTitle: 'B' }],
     };
 
     (wikipediaFeedService.getLinksForPage as jest.Mock).mockResolvedValue([]);
@@ -100,9 +96,7 @@ describe('POST /internal/challenges (Manual Creation)', () => {
   });
 
   it('should return 401 if unauthorized', async () => {
-    const response = await request(app)
-      .post('/internal/challenges')
-      .send({});
+    const response = await request(app).post('/internal/challenges').send({});
 
     expect(response.status).toBe(401);
   });

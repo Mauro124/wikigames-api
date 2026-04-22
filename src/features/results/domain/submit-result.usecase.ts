@@ -36,7 +36,7 @@ export class SubmitResultUseCase {
     }
 
     await resultsRepository.save(result);
-    
+
     if (!result.isSurrender) {
       await statsRepository.incrementStats(challengeId, clicks, timeSeconds);
     }

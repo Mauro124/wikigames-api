@@ -37,7 +37,7 @@ describe('DeleteUserUseCase', () => {
     const uid = 'user123';
     const error = new Error('User not found');
     (error as any).code = 'auth/user-not-found';
-    
+
     (admin.auth().deleteUser as jest.Mock).mockRejectedValue(error);
     (userRepository.delete as jest.Mock).mockResolvedValue(undefined);
 

@@ -86,7 +86,9 @@ export class GenerateChallengeUseCase {
 
           await challengesRepository.save(challenge);
           totalGenerated += challengesForDay.length;
-          logger.info(`Finished ${dateId} (${lang}): ${challengesForDay.length} challenges generated.`);
+          logger.info(
+            `Finished ${dateId} (${lang}): ${challengesForDay.length} challenges generated.`,
+          );
         } catch (error) {
           logger.error({ msg: 'Failed to save daily challenges', dateId, lang, error });
         }

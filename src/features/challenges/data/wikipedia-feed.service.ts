@@ -10,7 +10,7 @@ export class WikipediaFeedService {
     limit = 50,
   ): Promise<string[]> {
     const url = `https://${lang}.${this.baseUrl}`;
-    
+
     const prefixes: Record<string, string> = {
       en: 'Category',
       es: 'Categoría',

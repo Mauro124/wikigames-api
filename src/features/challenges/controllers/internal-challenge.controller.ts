@@ -15,7 +15,9 @@ export class InternalChallengeController {
     }
 
     try {
-      logger.info(`Starting monthly challenge generation from ${start.toISOString()} (Lang: ${lang})`);
+      logger.info(
+        `Starting monthly challenge generation from ${start.toISOString()} (Lang: ${lang})`,
+      );
 
       generateChallengeUseCase
         .generateMonthlyBatch(start, lang)
@@ -47,14 +49,36 @@ export class InternalChallengeController {
 
   async migrateCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
     const translationMap: Record<string, string> = {
-      'Science': 'Ciencia', 'History': 'Historia', 'Geography': 'Geografía', 'Politics': 'Política',
-      'Mathematics': 'Matemáticas', 'Law': 'Derecho', 'Philosophy': 'Filosofía', 'Space': 'Espacio',
-      'Music': 'Música', 'Business': 'Negocios', 'Engineering': 'Ingeniería', 'Psychology': 'Psicología',
-      'Biology': 'Biología', 'Physics': 'Física', 'Art': 'Arte', 'Sociology': 'Sociología',
-      'Video games': 'Videojuegos', 'Movies': 'Cine', 'Chemistry': 'Química', 'Medicine': 'Medicina',
-      'Literature': 'Literatura', 'Economics': 'Economía', 'Mythology': 'Mitología', 'Education': 'Educación',
-      'Animals': 'Animales', 'Technology': 'Tecnología', 'Astronomy': 'Astronomía', 'Architecture': 'Arquitectura',
-      'Sports': 'Deportes', 'Food': 'Gastronomía'
+      Science: 'Ciencia',
+      History: 'Historia',
+      Geography: 'Geografía',
+      Politics: 'Política',
+      Mathematics: 'Matemáticas',
+      Law: 'Derecho',
+      Philosophy: 'Filosofía',
+      Space: 'Espacio',
+      Music: 'Música',
+      Business: 'Negocios',
+      Engineering: 'Ingeniería',
+      Psychology: 'Psicología',
+      Biology: 'Biología',
+      Physics: 'Física',
+      Art: 'Arte',
+      Sociology: 'Sociología',
+      'Video games': 'Videojuegos',
+      Movies: 'Cine',
+      Chemistry: 'Química',
+      Medicine: 'Medicina',
+      Literature: 'Literatura',
+      Economics: 'Economía',
+      Mythology: 'Mitología',
+      Education: 'Educación',
+      Animals: 'Animales',
+      Technology: 'Tecnología',
+      Astronomy: 'Astronomía',
+      Architecture: 'Arquitectura',
+      Sports: 'Deportes',
+      Food: 'Gastronomía',
     };
 
     try {

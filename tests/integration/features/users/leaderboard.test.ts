@@ -43,7 +43,12 @@ describe('User Leaderboard', () => {
 
   it('should return top users sorted by score', async () => {
     const mockUsers = [
-      { id: '1', username: 'top1', avatarSvg: '...', stats: { totalScore: 1000, longestStreak: 5 } },
+      {
+        id: '1',
+        username: 'top1',
+        avatarSvg: '...',
+        stats: { totalScore: 1000, longestStreak: 5 },
+      },
       { id: '2', username: 'top2', avatarSvg: '...', stats: { totalScore: 800, longestStreak: 3 } },
     ];
 
@@ -52,7 +57,7 @@ describe('User Leaderboard', () => {
     (db.orderBy as jest.Mock).mockReturnThis();
     (db.limit as jest.Mock).mockReturnThis();
     (db.get as jest.Mock).mockResolvedValue({
-      docs: mockUsers.map(u => ({ id: u.id, data: () => u }))
+      docs: mockUsers.map((u) => ({ id: u.id, data: () => u })),
     });
 
     const response = await request(app).get('/users/leaderboard');

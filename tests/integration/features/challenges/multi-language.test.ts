@@ -50,9 +50,7 @@ describe('Multi-Language Challenges', () => {
       lang: 'es',
       categoryStart: 'Animales',
       categoryEnd: 'Historia',
-      challenges: [
-        { startTitle: 'Lobo', endTitle: 'Napoleón' }
-      ]
+      challenges: [{ startTitle: 'Lobo', endTitle: 'Napoleón' }],
     };
 
     // Mock BFS
@@ -60,8 +58,8 @@ describe('Multi-Language Challenges', () => {
     (wikipediaFeedService.getBacklinksForPage as jest.Mock).mockResolvedValue(['Lobo']);
 
     // Verify correct collection path: challenges -> es -> daily -> 2026-05-01
-    const mockCollection = (db.collection as jest.Mock).mockReturnThis();
-    const mockDoc = (db.doc as jest.Mock).mockReturnThis();
+    (db.collection as jest.Mock).mockReturnThis();
+    (db.doc as jest.Mock).mockReturnThis();
 
     await request(app)
       .post('/internal/challenges')
@@ -75,13 +73,13 @@ describe('Multi-Language Challenges', () => {
 
   it('should retrieve challenge based on lang query param', async () => {
     const today = new Date().toISOString().split('T')[0];
-    
+
     (db.collection as jest.Mock).mockReturnThis();
     (db.doc as jest.Mock).mockReturnThis();
     (db.get as jest.Mock).mockResolvedValue({
       exists: true,
       id: today,
-      data: () => ({ id: today, lang: 'es', challenges: [] })
+      data: () => ({ id: today, lang: 'es', challenges: [] }),
     });
 
     const response = await request(app).get('/challenges/today?lang=es');

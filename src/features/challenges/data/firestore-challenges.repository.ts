@@ -1,5 +1,4 @@
-import { Firestore, CollectionReference, DocumentData } from '@google-cloud/firestore';
-import { db } from '@config/firebase.config';
+import { CollectionReference, DocumentData } from '@google-cloud/firestore';
 import { BaseFirestoreRepository } from '@shared/data/base-firestore.repository';
 import { Challenge } from '../domain/challenge.entity';
 import { ChallengesRepository } from '../domain/challenges.repository';
@@ -23,12 +22,14 @@ export class FirestoreChallengesRepository
   async save(challenge: Challenge): Promise<void> {
     const { id, lang, ...data } = challenge;
     // Store in challenges/{lang}/daily/{dateId}
-    await this.getLangCollection(lang).doc(id).set({
-      ...data,
-      lang, // Keep lang in document for convenience
-      updatedAt: new Date(),
-      createdAt: data.createdAt || new Date(),
-    });
+    await this.getLangCollection(lang)
+      .doc(id)
+      .set({
+        ...data,
+        lang, // Keep lang in document for convenience
+        updatedAt: new Date(),
+        createdAt: data.createdAt || new Date(),
+      });
   }
 
   async findByIdAndLang(id: string, lang: string): Promise<Challenge | null> {

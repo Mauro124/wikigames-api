@@ -58,13 +58,13 @@ export class UpdateUserStatsUseCase {
       bestTimeSeconds: isSurrender
         ? stats.bestTimeSeconds
         : stats.bestTimeSeconds === null
-        ? timeSeconds
-        : Math.min(stats.bestTimeSeconds, timeSeconds),
+          ? timeSeconds
+          : Math.min(stats.bestTimeSeconds, timeSeconds),
       bestClicks: isSurrender
         ? stats.bestClicks
         : stats.bestClicks === null
-        ? clicks
-        : Math.min(stats.bestClicks, clicks),
+          ? clicks
+          : Math.min(stats.bestClicks, clicks),
       totalGames: stats.totalGames + 1,
       totalScore: (stats.totalScore || 0) + raceScore,
       lastPlayedDate: challengeId,

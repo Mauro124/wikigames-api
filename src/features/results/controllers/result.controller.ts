@@ -46,7 +46,7 @@ export class ResultController {
         path: [],
         isSurrender: true,
       };
-      
+
       const response = await submitResultUseCase.execute(payload);
       res.status(response.alreadySubmitted ? 200 : 201).json(response);
     } catch (error) {

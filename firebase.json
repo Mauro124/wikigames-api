@@ -1,0 +1,19 @@
+{
+  "functions": {
+    "source": ".",
+    "ignore": [
+      "node_modules",
+      ".git",
+      ".env",
+      "firebase-debug.log",
+      "firebase-debug.*.log",
+      "tests",
+      "coverage",
+      "specs",
+      "postman_collections"
+    ],
+    "predeploy": [
+      "npm run build"
+    ]
+  }
+}

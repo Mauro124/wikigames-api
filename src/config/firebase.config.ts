@@ -9,6 +9,8 @@ if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL || !p
 
 const firebaseApp = admin.apps.length
   ? admin.app()
+  : process.env.FIREBASE_CONFIG || process.env.K_SERVICE
+  ? admin.initializeApp()
   : admin.initializeApp({
       credential: admin.credential.cert({
         projectId: process.env.FIREBASE_PROJECT_ID,

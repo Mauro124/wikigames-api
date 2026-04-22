@@ -17,7 +17,7 @@ export class ArticleCooker {
     }
 
     const blocks: ArticleBlock[] = [];
-    
+
     // Cast to any to bypass strict Cheerio Element/Document this-context mismatch in TypeScript
     const searchTarget: any = content.length > 0 ? content : $.root();
 

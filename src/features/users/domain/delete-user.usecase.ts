@@ -17,7 +17,7 @@ export class DeleteUserUseCase {
       logger.info({ msg: 'User record deleted from Firestore', uid });
     } catch (error: any) {
       logger.error({ msg: 'Failed to delete user account', uid, error: error.message });
-      
+
       if (error.code === 'auth/user-not-found') {
         // If Auth user is gone, still try to delete Firestore record
         await userRepository.delete(uid);

@@ -19,26 +19,30 @@ describe('Bidirectional BFS (findShortestPath)', () => {
     //      B -> E -> D
     // A -> F -> D
     const graph: Record<string, string[]> = {
-      'A': ['B', 'F'],
-      'B': ['C', 'E'],
-      'C': ['D'],
-      'E': ['D'],
-      'F': ['D'],
+      A: ['B', 'F'],
+      B: ['C', 'E'],
+      C: ['D'],
+      E: ['D'],
+      F: ['D'],
     };
 
     const reverseGraph: Record<string, string[]> = {
-      'D': ['C', 'E', 'F'],
-      'C': ['B'],
-      'E': ['B'],
-      'F': ['A'],
-      'B': ['A'],
+      D: ['C', 'E', 'F'],
+      C: ['B'],
+      E: ['B'],
+      F: ['A'],
+      B: ['A'],
     };
 
-    (wikipediaFeedService.getLinksForPage as jest.Mock).mockImplementation((_, title) => Promise.resolve(graph[title] || []));
-    (wikipediaFeedService.getBacklinksForPage as jest.Mock).mockImplementation((_, title) => Promise.resolve(reverseGraph[title] || []));
+    (wikipediaFeedService.getLinksForPage as jest.Mock).mockImplementation((_, title) =>
+      Promise.resolve(graph[title] || []),
+    );
+    (wikipediaFeedService.getBacklinksForPage as jest.Mock).mockImplementation((_, title) =>
+      Promise.resolve(reverseGraph[title] || []),
+    );
 
     const result = await useCase.findShortestPath('en', 'A', 'D');
-    
+
     // Shortest path: A -> F -> D (2 clicks)
     expect(result).toBe(2);
   });

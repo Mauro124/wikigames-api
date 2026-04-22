@@ -7,7 +7,12 @@ async function seed() {
   const categories = [
     { id: 'sci', name: 'Science', localNames: { en: 'Science', es: 'Ciencia' }, active: true },
     { id: 'hist', name: 'History', localNames: { en: 'History', es: 'Historia' }, active: true },
-    { id: 'geo', name: 'Geography', localNames: { en: 'Geography', es: 'Geografía' }, active: true },
+    {
+      id: 'geo',
+      name: 'Geography',
+      localNames: { en: 'Geography', es: 'Geografía' },
+      active: true,
+    },
   ];
 
   for (const cat of categories) {
@@ -21,7 +26,15 @@ async function seed() {
     lang: 'en',
     categoryStart: 'Seed',
     categoryEnd: 'Seed',
-    challenges: [{ id: 1, startTitle: 'Earth', endTitle: 'Philosophy', minClicks: 3, difficulty: 'Easy' as const }],
+    challenges: [
+      {
+        id: 1,
+        startTitle: 'Earth',
+        endTitle: 'Philosophy',
+        minClicks: 3,
+        difficulty: 'Easy' as const,
+      },
+    ],
     createdAt: new Date(),
     updatedAt: new Date(),
   };

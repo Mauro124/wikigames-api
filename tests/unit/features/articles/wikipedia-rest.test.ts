@@ -28,9 +28,12 @@ describe('WikipediaService (REST API + ETags)', () => {
 
     const result = await wikipediaService.fetchArticle(lang, title);
 
-    expect(axios.get).toHaveBeenCalledWith(url, expect.objectContaining({
-      headers: expect.objectContaining({ 'User-Agent': expect.any(String) })
-    }));
+    expect(axios.get).toHaveBeenCalledWith(
+      url,
+      expect.objectContaining({
+        headers: expect.objectContaining({ 'User-Agent': expect.any(String) }),
+      }),
+    );
     expect(result.html).toBe(mockHtml);
     expect(result.etag).toBe(mockEtag);
     expect(cacheService.set).toHaveBeenCalled();
@@ -46,16 +49,19 @@ describe('WikipediaService (REST API + ETags)', () => {
 
     const result = await wikipediaService.fetchArticle(lang, title);
 
-    expect(axios.get).toHaveBeenCalledWith(url, expect.objectContaining({
-      headers: expect.objectContaining({ 'If-None-Match': '"v1"' })
-    }));
+    expect(axios.get).toHaveBeenCalledWith(
+      url,
+      expect.objectContaining({
+        headers: expect.objectContaining({ 'If-None-Match': '"v1"' }),
+      }),
+    );
     expect(result.html).toBe('cached');
     expect(cacheService.set).not.toHaveBeenCalled();
   });
 
   it('should throw 404 for missing articles', async () => {
     (axios.get as jest.Mock).mockRejectedValue({
-      response: { status: 404 }
+      response: { status: 404 },
     });
 
     await expect(wikipediaService.fetchArticle(lang, title)).rejects.toThrow('not found');

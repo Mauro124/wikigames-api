@@ -45,7 +45,13 @@ describe('User Stats Flow', () => {
   it('should update user stats when result is submitted', async () => {
     const mockUser = {
       id: 'test-uid',
-      stats: { currentStreak: 1, lastPlayedDate: '2026-04-20', totalGames: 1, longestStreak: 1, bestTimeSeconds: 100 }
+      stats: {
+        currentStreak: 1,
+        lastPlayedDate: '2026-04-20',
+        totalGames: 1,
+        longestStreak: 1,
+        bestTimeSeconds: 100,
+      },
     };
 
     // Sequence of GETs in submit flow:
@@ -56,7 +62,11 @@ describe('User Stats Flow', () => {
     (db.get as jest.Mock)
       .mockResolvedValueOnce({ exists: false }) // 1
       .mockResolvedValueOnce({ exists: true, id: 'test-uid', data: () => mockUser }) // 2
-      .mockResolvedValueOnce({ exists: true, id: 'test-uid', data: () => ({ ...mockUser, stats: { ...mockUser.stats, currentStreak: 2 } }) }) // 3
+      .mockResolvedValueOnce({
+        exists: true,
+        id: 'test-uid',
+        data: () => ({ ...mockUser, stats: { ...mockUser.stats, currentStreak: 2 } }),
+      }) // 3
       .mockResolvedValueOnce({ exists: true, data: () => ({ averageClicks: 10 }) }); // 4
 
     (db.update as jest.Mock).mockResolvedValue(undefined);
@@ -66,29 +76,29 @@ describe('User Stats Flow', () => {
       userId: 'test-uid',
       clicks: 5,
       timeSeconds: 50,
-      path: ['A', 'B']
+      path: ['A', 'B'],
     };
 
-    const response = await request(app)
-      .post('/results')
-      .send(payload);
+    const response = await request(app).post('/results').send(payload);
 
     expect(response.status).toBe(201);
-    expect(db.update).toHaveBeenCalledWith(expect.objectContaining({
-      stats: expect.objectContaining({
-        currentStreak: 2,
-        bestTimeSeconds: 50,
-        totalGames: 2,
-        totalScore: expect.any(Number)
-      })
-    }));
+    expect(db.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stats: expect.objectContaining({
+          currentStreak: 2,
+          bestTimeSeconds: 50,
+          totalGames: 2,
+          totalScore: expect.any(Number),
+        }),
+      }),
+    );
   });
 
   it('should retrieve user stats via API', async () => {
     const stats = { currentStreak: 2, bestTimeSeconds: 50, totalGames: 2 };
     (db.get as jest.Mock).mockResolvedValue({
       exists: true,
-      data: () => ({ id: 'test-uid', stats })
+      data: () => ({ id: 'test-uid', stats }),
     });
 
     const response = await request(app).get('/users/test-uid/stats');

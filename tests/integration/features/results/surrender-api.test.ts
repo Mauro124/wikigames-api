@@ -34,7 +34,7 @@ describe('POST /results/surrender', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    
+
     // Check if payload injected dummy values and isSurrender
     expect(submitResultUseCase.execute).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -44,7 +44,7 @@ describe('POST /results/surrender', () => {
         timeSeconds: 9999,
         path: [],
         isSurrender: true,
-      })
+      }),
     );
   });
 

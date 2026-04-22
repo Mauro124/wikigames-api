@@ -47,13 +47,13 @@ export class WikipediaService {
       const html = response.data;
       const etag = response.headers.etag as string;
       // REST API doesn't return resolved title in body easily, we use the title from response or requested
-      const resolvedTitle = title.replace(/_/g, ' '); 
+      const resolvedTitle = title.replace(/_/g, ' ');
 
       const result = { html, resolvedTitle, etag };
 
       // Cache for 24h
       cacheService.set(cacheKey, result);
-      
+
       return result;
     } catch (error: any) {
       if (error.response?.status === 404) {

@@ -27,13 +27,16 @@ export class CreateManualChallengeUseCase {
 
     for (let i = 0; i < challenges.length; i++) {
       const { startTitle, endTitle } = challenges[i];
-      
+
       logger.info(`Verifying manual challenge ${i + 1} (${lang}): ${startTitle} -> ${endTitle}`);
-      
+
       const minClicks = await generateChallengeUseCase.findShortestPath(lang, startTitle, endTitle);
-      
+
       if (minClicks === 0) {
-        throw new AppError(`No path found for challenge ${i + 1} in language "${lang}": ${startTitle} -> ${endTitle}`, 400);
+        throw new AppError(
+          `No path found for challenge ${i + 1} in language "${lang}": ${startTitle} -> ${endTitle}`,
+          400,
+        );
       }
 
       verifiedChallenges.push({
@@ -57,7 +60,7 @@ export class CreateManualChallengeUseCase {
 
     await challengesRepository.save(challenge);
     logger.info({ msg: 'Manual challenge created', id: challenge.id, lang: challenge.lang });
-    
+
     return challenge;
   }
 }

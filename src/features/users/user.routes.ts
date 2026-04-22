@@ -13,7 +13,7 @@ router.post(
   '/',
   verifyAuth as any,
   userController.validateRegistration,
-  userController.register.bind(userController)
+  userController.register.bind(userController),
 );
 
 /**
@@ -55,10 +55,6 @@ router.patch(
  * @desc Delete current user account
  * @access Private (Firebase Auth)
  */
-router.delete(
-  '/me',
-  verifyAuth as any,
-  userController.deleteAccount.bind(userController),
-);
+router.delete('/me', verifyAuth as any, userController.deleteAccount.bind(userController));
 
 export { router as userRouter };
