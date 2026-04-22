@@ -50,4 +50,15 @@ router.patch(
   userController.updateProfile.bind(userController),
 );
 
+/**
+ * @route DELETE /users/me
+ * @desc Delete current user account
+ * @access Private (Firebase Auth)
+ */
+router.delete(
+  '/me',
+  verifyAuth as any,
+  userController.deleteAccount.bind(userController),
+);
+
 export { router as userRouter };

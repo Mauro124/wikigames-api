@@ -3,6 +3,7 @@ import { validationResult, body } from 'express-validator';
 import { registerUserUseCase } from '../domain/register-user.usecase';
 import { getUserUseCase } from '../domain/get-user.usecase';
 import { updateUserUseCase } from '../domain/update-user.usecase';
+import { deleteUserUseCase } from '../domain/delete-user.usecase';
 import { userRepository } from '../data/firestore-user.repository';
 import { AuthRequest } from '@middleware/verify-auth.middleware';
 
@@ -121,6 +122,25 @@ export class UserController {
       res.status(200).json({
         status: 'success',
         data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteAccount(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    const uid = req.user?.uid;
+    if (!uid) {
+      res.status(401).json({ status: 'error', message: 'Unauthorized' });
+      return;
+    }
+
+    try {
+      await deleteUserUseCase.execute(uid);
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Account deleted successfully',
       });
     } catch (error) {
       next(error);
