@@ -6,6 +6,8 @@ export interface UserStats {
   bestTimeSeconds: number | null;
   bestClicks: number | null;
   totalGames: number;
+  totalWins: number;
+  totalLosses: number;
   totalScore: number;
   lastPlayedDate: string | null; // YYYY-MM-DD
 }
@@ -15,4 +17,5 @@ export interface User extends BaseEntity {
   email: string;
   avatarSvg: string;
   stats: UserStats;
+  playedGames: string[];
 }

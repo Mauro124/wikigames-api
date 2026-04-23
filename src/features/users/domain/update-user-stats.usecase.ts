@@ -4,6 +4,7 @@ import { logger } from '@shared/services/logger.service';
 export interface UpdateStatsDto {
   userId: string;
   challengeId: string; // YYYY-MM-DD
+  lang: string;
   clicks: number;
   timeSeconds: number;
   isSurrender?: boolean;
@@ -11,7 +12,7 @@ export interface UpdateStatsDto {
 
 export class UpdateUserStatsUseCase {
   async execute(dto: UpdateStatsDto): Promise<void> {
-    const { userId, challengeId, clicks, timeSeconds, isSurrender } = dto;
+    const { userId, challengeId, lang, clicks, timeSeconds, isSurrender } = dto;
 
     const user = await userRepository.findById(userId);
     if (!user) {
@@ -66,11 +67,22 @@ export class UpdateUserStatsUseCase {
           ? clicks
           : Math.min(stats.bestClicks, clicks),
       totalGames: stats.totalGames + 1,
+      totalWins: (stats.totalWins || 0) + (isSurrender ? 0 : 1),
+      totalLosses: (stats.totalLosses || 0) + (isSurrender ? 1 : 0),
       totalScore: (stats.totalScore || 0) + raceScore,
       lastPlayedDate: challengeId,
     };
 
-    await userRepository.update(userId, { stats: updatedStats });
+    const playedKey = `${challengeId}_${lang}`;
+    const playedGames = user.playedGames || [];
+    const updatedPlayedGames = playedGames.includes(playedKey)
+      ? playedGames
+      : [...playedGames, playedKey];
+
+    await userRepository.update(userId, {
+      stats: updatedStats,
+      playedGames: updatedPlayedGames,
+    });
     logger.info({ msg: 'User stats and score updated', userId, newStreak, raceScore });
   }
 }

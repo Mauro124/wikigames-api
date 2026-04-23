@@ -6,6 +6,7 @@ export class ResultController {
   validateSubmission = [
     body('challengeId').isString().notEmpty(),
     body('userId').isString().notEmpty(),
+    body('lang').isString().isLength({ min: 2, max: 5 }),
     body('clicks').isInt({ min: 1 }),
     body('timeSeconds').isInt({ min: 1 }),
     body('path').isArray({ min: 1 }),
@@ -14,6 +15,7 @@ export class ResultController {
   validateSurrender = [
     body('challengeId').isString().notEmpty(),
     body('userId').isString().notEmpty(),
+    body('lang').isString().isLength({ min: 2, max: 5 }),
   ];
 
   async submit(req: Request, res: Response, next: NextFunction): Promise<void> {

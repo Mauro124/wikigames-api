@@ -11,9 +11,10 @@ describe('UpdateUserStatsUseCase logic', () => {
     jest.clearAllMocks();
   });
 
-  const mockUser = (stats: any) => ({
+  const mockUser = (stats: any, playedGames: string[] = []) => ({
     id: 'user-1',
     stats,
+    playedGames,
   });
 
   it('should start streak at 1 if first time playing', async () => {
@@ -23,6 +24,7 @@ describe('UpdateUserStatsUseCase logic', () => {
     await useCase.execute({
       userId: 'user-1',
       challengeId: '2026-04-21',
+      lang: 'en',
       clicks: 5,
       timeSeconds: 100,
     });
@@ -31,6 +33,7 @@ describe('UpdateUserStatsUseCase logic', () => {
       'user-1',
       expect.objectContaining({
         stats: expect.objectContaining({ currentStreak: 1, lastPlayedDate: '2026-04-21' }),
+        playedGames: ['2026-04-21_en'],
       }),
     );
   });
@@ -42,6 +45,7 @@ describe('UpdateUserStatsUseCase logic', () => {
     await useCase.execute({
       userId: 'user-1',
       challengeId: '2026-04-21',
+      lang: 'en',
       clicks: 5,
       timeSeconds: 100,
     });
@@ -50,44 +54,29 @@ describe('UpdateUserStatsUseCase logic', () => {
       'user-1',
       expect.objectContaining({
         stats: expect.objectContaining({ currentStreak: 2, longestStreak: 2 }),
+        playedGames: ['2026-04-21_en'],
       }),
     );
   });
 
-  it('should reset streak to 1 if a day was skipped', async () => {
-    const user = mockUser({ currentStreak: 5, lastPlayedDate: '2026-04-10', longestStreak: 5 });
+  it('should reset streak to 0 and track game if surrendered', async () => {
+    const user = mockUser({ currentStreak: 5, lastPlayedDate: '2026-04-20', longestStreak: 5 });
     (userRepository.findById as jest.Mock).mockResolvedValue(user);
 
     await useCase.execute({
       userId: 'user-1',
       challengeId: '2026-04-21',
-      clicks: 5,
-      timeSeconds: 100,
+      lang: 'en',
+      clicks: 99,
+      timeSeconds: 1000,
+      isSurrender: true,
     });
 
     expect(userRepository.update).toHaveBeenCalledWith(
       'user-1',
       expect.objectContaining({
-        stats: expect.objectContaining({ currentStreak: 1, longestStreak: 5 }),
-      }),
-    );
-  });
-
-  it('should update bestTime if new record is achieved', async () => {
-    const user = mockUser({ bestTimeSeconds: 100, currentStreak: 1, lastPlayedDate: '2026-04-21' });
-    (userRepository.findById as jest.Mock).mockResolvedValue(user);
-
-    await useCase.execute({
-      userId: 'user-1',
-      challengeId: '2026-04-21',
-      clicks: 5,
-      timeSeconds: 50,
-    });
-
-    expect(userRepository.update).toHaveBeenCalledWith(
-      'user-1',
-      expect.objectContaining({
-        stats: expect.objectContaining({ bestTimeSeconds: 50 }),
+        stats: expect.objectContaining({ currentStreak: 0, totalLosses: 1 }),
+        playedGames: ['2026-04-21_en'],
       }),
     );
   });

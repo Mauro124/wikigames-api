@@ -37,14 +37,13 @@ export class SubmitResultUseCase {
 
     await resultsRepository.save(result);
 
-    if (!result.isSurrender) {
-      await statsRepository.incrementStats(challengeId, clicks, timeSeconds);
-    }
+    await statsRepository.incrementStats(challengeId, clicks, timeSeconds, result.isSurrender);
 
     // Update user persistent stats (streak, records)
     await updateUserStatsUseCase.execute({
       userId,
       challengeId,
+      lang: result.lang,
       clicks,
       timeSeconds,
       isSurrender: result.isSurrender,

@@ -16,8 +16,24 @@ export class FirestoreStatsRepository
     await this.persist(id, data);
   }
 
-  async incrementStats(challengeId: string, clicks: number, timeSeconds: number): Promise<void> {
+  async incrementStats(
+    challengeId: string,
+    clicks: number,
+    timeSeconds: number,
+    isSurrender = false,
+  ): Promise<void> {
     const docRef = this.collection.doc(challengeId);
+
+    if (isSurrender) {
+      await docRef.set(
+        {
+          totalLosses: admin.firestore.FieldValue.increment(1),
+          updatedAt: new Date(),
+        },
+        { merge: true },
+      );
+      return;
+    }
 
     // Bucket clicks: cap at 20
     const bucket = clicks > 20 ? '20plus' : clicks.toString();

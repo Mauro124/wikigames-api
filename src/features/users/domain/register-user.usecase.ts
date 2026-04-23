@@ -44,9 +44,12 @@ export class RegisterUserUseCase {
         bestTimeSeconds: null,
         bestClicks: null,
         totalGames: 0,
+        totalWins: 0,
+        totalLosses: 0,
         totalScore: 0,
         lastPlayedDate: null,
       },
+      playedGames: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     };
