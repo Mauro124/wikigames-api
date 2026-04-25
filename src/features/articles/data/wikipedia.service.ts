@@ -7,6 +7,7 @@ export interface WikiRESTResponse {
   html: string;
   resolvedTitle: string;
   etag: string;
+  cached: boolean;
 }
 
 interface CachedArticle {
@@ -41,12 +42,11 @@ export class WikipediaService {
 
       if (response.status === 304 && cached) {
         logger.debug(`ETag hit (304) for ${title} (${lang})`);
-        return cached;
+        return { ...cached, cached: true };
       }
 
       const html = response.data;
       const etag = response.headers.etag as string;
-      // REST API doesn't return resolved title in body easily, we use the title from response or requested
       const resolvedTitle = title.replace(/_/g, ' ');
 
       const result = { html, resolvedTitle, etag };
@@ -54,7 +54,7 @@ export class WikipediaService {
       // Cache for 24h
       cacheService.set(cacheKey, result);
 
-      return result;
+      return { ...result, cached: false };
     } catch (error: any) {
       if (error.response?.status === 404) {
         throw new AppError(`Article "${title}" not found in language "${lang}"`, 404);

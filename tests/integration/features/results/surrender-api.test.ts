@@ -30,21 +30,23 @@ describe('POST /results/surrender', () => {
     const response = await request(app).post('/results/surrender').send({
       challengeId: '2024-06-01_0',
       userId: 'test_user',
+      lang: 'en',
     });
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-
+    
     // Check if payload injected dummy values and isSurrender
     expect(submitResultUseCase.execute).toHaveBeenCalledWith(
       expect.objectContaining({
         challengeId: '2024-06-01_0',
         userId: 'test_user',
+        lang: 'en',
         clicks: 9999,
         timeSeconds: 9999,
         path: [],
         isSurrender: true,
-      }),
+      })
     );
   });
 

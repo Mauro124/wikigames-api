@@ -48,8 +48,7 @@ describe('POST /internal/challenges (Manual Creation)', () => {
     const mockPayload = {
       id: '2026-05-01',
       lang: 'en',
-      categoryStart: 'Science',
-      categoryEnd: 'History',
+      targetTitle: 'Quantum Mechanics',
       challenges: [{ startTitle: 'Albert Einstein', endTitle: 'Quantum Mechanics' }],
     };
 
@@ -78,8 +77,7 @@ describe('POST /internal/challenges (Manual Creation)', () => {
     const mockPayload = {
       id: '2026-05-01',
       lang: 'en',
-      categoryStart: 'Science',
-      categoryEnd: 'History',
+      targetTitle: 'B',
       challenges: [{ startTitle: 'A', endTitle: 'B' }],
     };
 

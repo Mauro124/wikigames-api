@@ -1,8 +1,9 @@
 import { Challenge, SingleChallenge } from './challenge.entity';
 import { wikipediaFeedService } from '../data/wikipedia-feed.service';
 import { challengesRepository } from '../data/firestore-challenges.repository';
-import { categoriesRepository } from '../data/firestore-categories.repository';
 import { logger } from '@shared/services/logger.service';
+import { OBJECTIVES } from './objectives';
+import { STARTERS } from './starters';
 
 export class GenerateChallengeUseCase {
   /**
@@ -11,61 +12,43 @@ export class GenerateChallengeUseCase {
   async generateMonthlyBatch(startDate: Date, lang: string = 'en'): Promise<number> {
     let totalGenerated = 0;
 
-    const categories = await categoriesRepository.findAll();
-    if (categories.length === 0) throw new Error('No categories available');
+    const languageObjectives = OBJECTIVES[lang] || OBJECTIVES['en'];
+    const languageStarters = STARTERS[lang] || STARTERS['en'];
 
     for (let day = 0; day < 30; day++) {
       const currentDate = new Date(startDate);
       currentDate.setDate(startDate.getDate() + day);
       const dateId = currentDate.toISOString().split('T')[0];
 
-      // Pick two categories
-      const catStartIdx = day % categories.length;
-      const catEndIdx = (day + 1) % categories.length;
-      const categoryStartInternal = categories[catStartIdx].name;
-      const categoryEndInternal = categories[catEndIdx].name;
-
-      const categoryStart = categories[catStartIdx].localNames?.[lang] || categoryStartInternal;
-      const categoryEnd = categories[catEndIdx].localNames?.[lang] || categoryEndInternal;
+      const objIdx = day % languageObjectives.length;
+      const targetTitle = languageObjectives[objIdx];
 
       logger.info(
-        `Generating challenges for ${dateId} (Lang: ${lang}, Start: ${categoryStart}, End: ${categoryEnd})`,
+        `Generating challenges for ${dateId} (Lang: ${lang}, Target: ${targetTitle})`,
       );
 
-      const poolStart = await wikipediaFeedService.getRandomArticlesFromCategory(
-        lang,
-        categoryStart,
-        50,
-      );
-      const poolEnd = await wikipediaFeedService.getRandomArticlesFromCategory(
-        lang,
-        categoryEnd,
-        50,
-      );
-
-      if (poolStart.length < 1 || poolEnd.length < 1) {
-        logger.warn(`Pool for day ${dateId} (${lang}) too small. Skipping.`);
-        continue;
-      }
+      const poolStart = languageStarters;
 
       const challengesForDay: SingleChallenge[] = [];
       let attempts = 0;
-      const maxAttempts = 30;
+      const maxAttempts = 50;
 
       while (challengesForDay.length < 10 && attempts < maxAttempts) {
         attempts++;
         const start = poolStart[Math.floor(Math.random() * poolStart.length)];
-        const end = poolEnd[Math.floor(Math.random() * poolEnd.length)];
 
-        if (start === end) continue;
+        if (start === targetTitle) continue;
 
-        const minClicks = await this.findShortestPath(lang, start, end);
+        // Skip if already in list
+        if (challengesForDay.some((c) => c.startTitle === start)) continue;
+
+        const minClicks = await this.findShortestPath(lang, start, targetTitle);
         if (minClicks > 0) {
           const difficulty = this.calculateDifficulty(minClicks);
           challengesForDay.push({
             id: challengesForDay.length + 1,
             startTitle: start,
-            endTitle: end,
+            endTitle: targetTitle,
             minClicks,
             difficulty,
           });
@@ -77,8 +60,7 @@ export class GenerateChallengeUseCase {
           const challenge: Challenge = {
             id: dateId,
             lang,
-            categoryStart,
-            categoryEnd,
+            targetTitle,
             challenges: challengesForDay,
             createdAt: new Date(),
             updatedAt: new Date(),

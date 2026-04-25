@@ -3,7 +3,6 @@ import { wikipediaFeedService } from '../../../../src/features/challenges/data/w
 
 jest.mock('../../../../src/features/challenges/data/wikipedia-feed.service');
 jest.mock('../../../../src/features/challenges/data/firestore-challenges.repository');
-jest.mock('../../../../src/features/challenges/data/firestore-categories.repository');
 
 describe('Bidirectional BFS (findShortestPath)', () => {
   let useCase: GenerateChallengeUseCase;

@@ -5,16 +5,30 @@ import { app, server } from '../src/index';
 jest.mock('../src/config/firebase.config', () => {
   const mockCollection = {
     doc: jest.fn((id: string) => ({
-      get: jest.fn().mockResolvedValue({
-        exists: !id.includes('_'), // true for stats (e.g., '2024-05-24'), false for results ('2024-05-24_user123')
-        id: id,
-        data: () => ({
+      get: jest.fn().mockImplementation(async () => {
+        const isResult = id.includes('_');
+        return {
+          exists: !isResult, // results don't exist yet, stats and users do
           id: id,
-          totalWins: 10,
-          sumClicks: 150,
-          sumTime: 600,
-          distribution: { '10': 5, '20': 5 },
-        }),
+          data: () => {
+            if (isResult) return {};
+            if (id.match(/^\d{4}-\d{2}-\d{2}$/)) { // stats
+              return {
+                id,
+                totalWins: 10,
+                sumClicks: 150,
+                sumTime: 600,
+                distribution: { '10': 5, '20': 5 },
+              };
+            }
+            return { // users
+              id,
+              username: 'test_user',
+              stats: { currentStreak: 1, totalGames: 1, totalWins: 1, totalLosses: 0 },
+              playedGames: [],
+            };
+          },
+        };
       }),
       set: jest.fn().mockResolvedValue(undefined),
       update: jest.fn().mockResolvedValue(undefined),
@@ -63,6 +77,7 @@ describe('Stats flow', () => {
     const payload = {
       challengeId: '2024-05-24',
       userId: 'test-user-id',
+      lang: 'en',
       clicks: 5,
       timeSeconds: 120,
       path: ['A', 'B', 'C'],

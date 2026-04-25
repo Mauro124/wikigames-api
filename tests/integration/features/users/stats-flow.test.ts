@@ -74,6 +74,7 @@ describe('User Stats Flow', () => {
     const payload = {
       challengeId: '2026-04-21',
       userId: 'test-uid',
+      lang: 'en',
       clicks: 5,
       timeSeconds: 50,
       path: ['A', 'B'],

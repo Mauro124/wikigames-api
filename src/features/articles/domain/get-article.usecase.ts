@@ -4,7 +4,7 @@ import { articleCooker } from '../utils/html-cooker';
 
 export class GetArticleUseCase {
   async execute(lang: string, title: string): Promise<Article> {
-    const { html, resolvedTitle } = await wikipediaService.fetchArticle(lang, title);
+    const { html, resolvedTitle, cached } = await wikipediaService.fetchArticle(lang, title);
     const blocks = articleCooker.cook(html);
 
     return {
@@ -12,7 +12,7 @@ export class GetArticleUseCase {
       resolvedTitle,
       lang,
       blocks,
-      cached: false, // Updated by controller if needed
+      cached,
       timestamp: new Date().toISOString(),
     };
   }

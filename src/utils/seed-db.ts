@@ -1,31 +1,13 @@
 import { challengesRepository } from '@features/challenges/data/firestore-challenges.repository';
-import { categoriesRepository } from '@features/challenges/data/firestore-categories.repository';
 import { logger } from '@shared/services/logger.service';
 
 async function seed() {
-  // Seed Categories
-  const categories = [
-    { id: 'sci', name: 'Science', localNames: { en: 'Science', es: 'Ciencia' }, active: true },
-    { id: 'hist', name: 'History', localNames: { en: 'History', es: 'Historia' }, active: true },
-    {
-      id: 'geo',
-      name: 'Geography',
-      localNames: { en: 'Geography', es: 'Geografía' },
-      active: true,
-    },
-  ];
-
-  for (const cat of categories) {
-    await categoriesRepository.save(cat as any);
-  }
-
   const today = new Date().toISOString().split('T')[0];
 
   const initialChallenge = {
     id: today,
     lang: 'en',
-    categoryStart: 'Seed',
-    categoryEnd: 'Seed',
+    targetTitle: 'Philosophy',
     challenges: [
       {
         id: 1,

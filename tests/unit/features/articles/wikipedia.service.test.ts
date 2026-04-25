@@ -13,43 +13,29 @@ describe('WikipediaService', () => {
 
   it('should fetch article and return html', async () => {
     nock(baseUrl)
-      .get('/w/api.php')
-      .query(true)
-      .reply(200, {
-        parse: {
-          title: 'Earth',
-          text: { '*': '<div>Earth content</div>' },
-        },
-      });
+      .get(`/api/rest_v1/page/html/${title}`)
+      .reply(200, '<div>Earth content</div>', { etag: '123' });
 
     const result = await wikipediaService.fetchArticle(lang, title);
     expect(result.html).toBe('<div>Earth content</div>');
     expect(result.resolvedTitle).toBe('Earth');
   });
 
-  it('should resolve redirects', async () => {
+  it('should resolve redirects (handled by REST API natively)', async () => {
+    // REST API resolves redirects automatically. If we call with 'Pizza', 
+    // it returns the content of the resolved page.
     nock(baseUrl)
-      .get('/w/api.php')
-      .query(true)
-      .reply(200, {
-        parse: {
-          title: 'Pizza (food)',
-          text: { '*': '<div>Pizza content</div>' },
-          redirects: [{ from: 'Pizza', to: 'Pizza (food)' }],
-        },
-      });
+      .get('/api/rest_v1/page/html/Pizza')
+      .reply(200, '<div>Pizza content</div>', { etag: '456' });
 
     const result = await wikipediaService.fetchArticle(lang, 'Pizza');
-    expect(result.resolvedTitle).toBe('Pizza (food)');
+    expect(result.resolvedTitle).toBe('Pizza');
   });
 
   it('should throw 404 if article is missing', async () => {
     nock(baseUrl)
-      .get('/w/api.php')
-      .query(true)
-      .reply(200, {
-        error: { code: 'missingtitle', info: 'The page you requested does not exist.' },
-      });
+      .get('/api/rest_v1/page/html/NonExistent')
+      .reply(404);
 
     await expect(wikipediaService.fetchArticle(lang, 'NonExistent')).rejects.toThrow(AppError);
   });

@@ -17,9 +17,4 @@ internalRouter.post(
   internalChallengeController.createManual.bind(internalChallengeController),
 );
 
-internalRouter.post(
-  '/categories/migrate',
-  internalChallengeController.migrateCategories.bind(internalChallengeController),
-);
-
 export { internalRouter };

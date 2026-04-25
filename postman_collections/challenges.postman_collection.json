@@ -57,7 +57,7 @@
 					"_postman_previewlanguage": "json",
 					"header": [],
 					"cookie": [],
-					"body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"en\",\n    \"categoryStart\": \"Science\",\n    \"categoryEnd\": \"History\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"DNA\",\n            \"endTitle\": \"Napoleon\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:00:00.000Z\"\n}"
+					"body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"en\",\n    \"targetTitle\": \"Lionel Messi\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"DNA\",\n            \"endTitle\": \"Lionel Messi\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:00:00.000Z\"\n}"
 				},
 				{
 					"name": "Success (Spanish)",
@@ -86,7 +86,7 @@
 					"_postman_previewlanguage": "json",
 					"header": [],
 					"cookie": [],
-					"body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"es\",\n    \"categoryStart\": \"Ciencia\",\n    \"categoryEnd\": \"Historia\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"ADN\",\n            \"endTitle\": \"Napoleón\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:05:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:05:00.000Z\"\n}"
+					"body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"es\",\n    \"targetTitle\": \"Lionel Messi\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"ADN\",\n            \"endTitle\": \"Lionel Messi\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:05:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:05:00.000Z\"\n}"
 				}
 			]
 		},

@@ -10,7 +10,6 @@ export interface SingleChallenge {
 
 export interface Challenge extends BaseEntity {
   lang: string;
-  categoryStart: string;
-  categoryEnd: string;
+  targetTitle: string;
   challenges: SingleChallenge[];
 }

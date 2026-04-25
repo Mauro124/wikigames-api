@@ -7,8 +7,7 @@ import { logger } from '@shared/services/logger.service';
 export interface ManualChallengeDto {
   id: string; // YYYY-MM-DD
   lang: string;
-  categoryStart: string;
-  categoryEnd: string;
+  targetTitle?: string;
   challenges: {
     startTitle: string;
     endTitle: string;
@@ -17,9 +16,9 @@ export interface ManualChallengeDto {
 
 export class CreateManualChallengeUseCase {
   async execute(dto: ManualChallengeDto): Promise<Challenge> {
-    const { id, lang, categoryStart, categoryEnd, challenges } = dto;
+    const { id, lang, targetTitle, challenges } = dto;
 
-    if (!id || !lang || !categoryStart || !categoryEnd || !challenges || challenges.length === 0) {
+    if (!id || !lang || !challenges || challenges.length === 0) {
       throw new AppError('Missing required fields', 400);
     }
 
@@ -51,8 +50,7 @@ export class CreateManualChallengeUseCase {
     const challenge: Challenge = {
       id,
       lang,
-      categoryStart,
-      categoryEnd,
+      targetTitle: targetTitle || challenges[0].endTitle,
       challenges: verifiedChallenges,
       createdAt: new Date(),
       updatedAt: new Date(),

@@ -48,8 +48,7 @@ describe('Multi-Language Challenges', () => {
     const mockChallenge = {
       id: '2026-05-01',
       lang: 'es',
-      categoryStart: 'Animales',
-      categoryEnd: 'Historia',
+      targetTitle: 'Napoleón',
       challenges: [{ startTitle: 'Lobo', endTitle: 'Napoleón' }],
     };
 
@@ -68,7 +67,6 @@ describe('Multi-Language Challenges', () => {
 
     expect(db.collection).toHaveBeenCalledWith('challenges');
     expect(db.doc).toHaveBeenCalledWith('es'); // Language doc
-    // Note: Subsequent collection('daily') call is part of getLangCollection
   });
 
   it('should retrieve challenge based on lang query param', async () => {

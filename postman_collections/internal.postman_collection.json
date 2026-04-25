@@ -31,7 +31,7 @@
           "host": ["{{base_url}}"],
           "path": ["internal", "challenges", "generate"]
         },
-        "description": "Genera 30 días de desafíos (10 por día) con categorías temáticas y verificación de ruta BFS."
+        "description": "Genera 30 días de desafíos (10 por día) con un objetivo fijo por día y verificación de ruta BFS."
       },
       "response": []
     },
@@ -48,7 +48,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"id\": \"2026-05-01\",\n    \"lang\": \"en\",\n    \"categoryStart\": \"Science\",\n    \"categoryEnd\": \"History\",\n    \"challenges\": [\n        {\n            \"startTitle\": \"Albert Einstein\",\n            \"endTitle\": \"French Revolution\"\n        }\n    ]\n}",
+          "raw": "{\n    \"id\": \"2026-05-01\",\n    \"lang\": \"en\",\n    \"targetTitle\": \"French Revolution\",\n    \"challenges\": [\n        {\n            \"startTitle\": \"Albert Einstein\",\n            \"endTitle\": \"French Revolution\"\n        }\n    ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -60,27 +60,7 @@
           "host": ["{{base_url}}"],
           "path": ["internal", "challenges"]
         },
-        "description": "Crea un desafío específico para una fecha determinada, calculando automáticamente minClicks y dificultad."
-      },
-      "response": []
-    },
-    {
-      "name": "Migrate Categories (Localization)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "X-GENERATOR-KEY",
-            "value": "{{generator_key}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{base_url}}/internal/categories/migrate",
-          "host": ["{{base_url}}"],
-          "path": ["internal", "categories", "migrate"]
-        },
-        "description": "Añade traducciones al español a las categorías existentes para habilitar la generación de retos en 'es'."
+        "description": "Crea un desafío específico para una fecha determinada con un objetivo fijo, calculando automáticamente minClicks y dificultad."
       },
       "response": []
     }
