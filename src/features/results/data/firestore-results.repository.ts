@@ -26,5 +26,3 @@ export class FirestoreResultsRepository
     return doc.exists;
   }
 }
-
-export const resultsRepository = new FirestoreResultsRepository();

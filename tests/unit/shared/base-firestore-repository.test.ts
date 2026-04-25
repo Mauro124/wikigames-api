@@ -24,8 +24,8 @@ interface TestEntity extends BaseEntity {
 }
 
 class TestRepository extends BaseFirestoreRepository<TestEntity> {
-  constructor() {
-    super('test-collection');
+  constructor(dbInstance: any) {
+    super('test-collection', dbInstance);
   }
 }
 
@@ -33,7 +33,7 @@ describe('BaseFirestoreRepository', () => {
   let repo: TestRepository;
 
   beforeEach(() => {
-    repo = new TestRepository();
+    repo = new TestRepository(db);
     jest.clearAllMocks();
   });
 

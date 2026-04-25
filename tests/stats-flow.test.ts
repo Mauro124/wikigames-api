@@ -12,7 +12,8 @@ jest.mock('../src/config/firebase.config', () => {
           id: id,
           data: () => {
             if (isResult) return {};
-            if (id.match(/^\d{4}-\d{2}-\d{2}$/)) { // stats
+            if (id.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              // stats
               return {
                 id,
                 totalWins: 10,
@@ -21,7 +22,8 @@ jest.mock('../src/config/firebase.config', () => {
                 distribution: { '10': 5, '20': 5 },
               };
             }
-            return { // users
+            return {
+              // users
               id,
               username: 'test_user',
               stats: { currentStreak: 1, totalGames: 1, totalWins: 1, totalLosses: 0 },

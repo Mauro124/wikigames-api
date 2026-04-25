@@ -1,4 +1,4 @@
-import { userRepository } from '../data/firestore-user.repository';
+import { UserRepository } from './user.repository';
 import { logger } from '@shared/services/logger.service';
 
 export interface UpdateStatsDto {
@@ -11,10 +11,12 @@ export interface UpdateStatsDto {
 }
 
 export class UpdateUserStatsUseCase {
+  constructor(private readonly userRepository: UserRepository) {}
+
   async execute(dto: UpdateStatsDto): Promise<void> {
     const { userId, challengeId, lang, clicks, timeSeconds, isSurrender } = dto;
 
-    const user = await userRepository.findById(userId);
+    const user = await this.userRepository.findById(userId);
     if (!user) {
       logger.warn({ msg: 'User not found for stats update', userId });
       return;
@@ -79,12 +81,10 @@ export class UpdateUserStatsUseCase {
       ? playedGames
       : [...playedGames, playedKey];
 
-    await userRepository.update(userId, {
+    await this.userRepository.update(userId, {
       stats: updatedStats,
       playedGames: updatedPlayedGames,
     });
     logger.info({ msg: 'User stats and score updated', userId, newStreak, raceScore });
   }
 }
-
-export const updateUserStatsUseCase = new UpdateUserStatsUseCase();

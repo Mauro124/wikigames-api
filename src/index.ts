@@ -30,7 +30,11 @@ app.use(errorHandler);
 
 let server: any;
 
-if (!process.env.FUNCTIONS_EMULATOR && !process.env.FIREBASE_CONFIG && process.env.NODE_ENV !== 'production') {
+if (
+  !process.env.FUNCTIONS_EMULATOR &&
+  !process.env.FIREBASE_CONFIG &&
+  process.env.NODE_ENV !== 'production'
+) {
   server = app.listen(config.port, () => {
     logger.info(`WikiGames Backend running in ${config.env} mode on port ${config.port}`);
   });

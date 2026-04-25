@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { getArticleUseCase } from '../domain/get-article.usecase';
+import { GetArticleUseCase } from '../domain/get-article.usecase';
 
 export class ArticleController {
+  constructor(private readonly getArticleUseCase: GetArticleUseCase) {}
+
   /**
    * Delegates fetching and caching (ETags) to UseCase and Service.
    */
@@ -10,12 +12,10 @@ export class ArticleController {
     const title = req.params.title as string;
 
     try {
-      const article = await getArticleUseCase.execute(lang, title);
+      const article = await this.getArticleUseCase.execute(lang, title);
       res.json(article);
     } catch (error) {
       next(error);
     }
   }
 }
-
-export const articleController = new ArticleController();

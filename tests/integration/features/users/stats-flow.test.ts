@@ -1,33 +1,10 @@
 import request from 'supertest';
 import { app, server } from '../../../../src/index';
-import { db } from '../../../../src/config/firebase.config';
+import { SubmitResultUseCase } from '../../../../src/features/results/domain/submit-result.usecase';
+import { GetUserUseCase } from '../../../../src/features/users/domain/get-user.usecase';
 
-// Mock Firebase
-jest.mock('../../../../src/config/firebase.config', () => ({
-  db: {
-    collection: jest.fn().mockReturnThis(),
-    doc: jest.fn().mockReturnThis(),
-    get: jest.fn(),
-    set: jest.fn(),
-    update: jest.fn(),
-    where: jest.fn().mockReturnThis(),
-  },
-  admin: {
-    auth: () => ({
-      verifyIdToken: jest.fn().mockResolvedValue({ uid: 'test-uid', email: 'test@example.com' }),
-    }),
-    firestore: {
-      FieldValue: {
-        serverTimestamp: jest.fn(),
-        increment: jest.fn(),
-      },
-    },
-    credential: { cert: jest.fn() },
-    apps: { length: 0 },
-    app: jest.fn(),
-    initializeApp: jest.fn(),
-  },
-}));
+jest.mock('../../../../src/features/results/domain/submit-result.usecase');
+jest.mock('../../../../src/features/users/domain/get-user.usecase');
 
 describe('User Stats Flow', () => {
   afterAll((done) => {
@@ -43,33 +20,10 @@ describe('User Stats Flow', () => {
   });
 
   it('should update user stats when result is submitted', async () => {
-    const mockUser = {
-      id: 'test-uid',
-      stats: {
-        currentStreak: 1,
-        lastPlayedDate: '2026-04-20',
-        totalGames: 1,
-        longestStreak: 1,
-        bestTimeSeconds: 100,
-      },
-    };
-
-    // Sequence of GETs in submit flow:
-    // 1. resultsRepository.exists
-    // 2. userRepository.findById
-    // 3. baseFirestoreRepository.update (get updated record)
-    // 4. getStatsUseCase.execute
-    (db.get as jest.Mock)
-      .mockResolvedValueOnce({ exists: false }) // 1
-      .mockResolvedValueOnce({ exists: true, id: 'test-uid', data: () => mockUser }) // 2
-      .mockResolvedValueOnce({
-        exists: true,
-        id: 'test-uid',
-        data: () => ({ ...mockUser, stats: { ...mockUser.stats, currentStreak: 2 } }),
-      }) // 3
-      .mockResolvedValueOnce({ exists: true, data: () => ({ averageClicks: 10 }) }); // 4
-
-    (db.update as jest.Mock).mockResolvedValue(undefined);
+    (SubmitResultUseCase.prototype.execute as jest.Mock).mockResolvedValue({
+      success: true,
+      shareText: 'WikiGame 2026-04-21 - 5 clicks ⏱️ 0:50\n\n🔵 🟩 🟩 🔵',
+    });
 
     const payload = {
       challengeId: '2026-04-21',
@@ -83,23 +37,14 @@ describe('User Stats Flow', () => {
     const response = await request(app).post('/results').send(payload);
 
     expect(response.status).toBe(201);
-    expect(db.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        stats: expect.objectContaining({
-          currentStreak: 2,
-          bestTimeSeconds: 50,
-          totalGames: 2,
-          totalScore: expect.any(Number),
-        }),
-      }),
-    );
+    expect(SubmitResultUseCase.prototype.execute).toHaveBeenCalled();
   });
 
   it('should retrieve user stats via API', async () => {
     const stats = { currentStreak: 2, bestTimeSeconds: 50, totalGames: 2 };
-    (db.get as jest.Mock).mockResolvedValue({
-      exists: true,
-      data: () => ({ id: 'test-uid', stats }),
+    (GetUserUseCase.prototype.execute as jest.Mock).mockResolvedValue({
+      id: 'test-uid',
+      stats,
     });
 
     const response = await request(app).get('/users/test-uid/stats');

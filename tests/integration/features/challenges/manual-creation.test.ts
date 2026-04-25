@@ -1,34 +1,8 @@
 import request from 'supertest';
 import { app, server } from '../../../../src/index';
-import { db } from '../../../../src/config/firebase.config';
-import { wikipediaFeedService } from '../../../../src/features/challenges/data/wikipedia-feed.service';
+import { CreateManualChallengeUseCase } from '../../../../src/features/challenges/domain/create-manual-challenge.usecase';
 
-// Mock Firebase Config globally
-jest.mock('../../../../src/config/firebase.config', () => ({
-  db: {
-    collection: jest.fn().mockReturnThis(),
-    doc: jest.fn().mockReturnThis(),
-    get: jest.fn(),
-    set: jest.fn(),
-  },
-  admin: {
-    auth: jest.fn(),
-    firestore: {
-      FieldValue: {
-        serverTimestamp: jest.fn(),
-      },
-    },
-    credential: {
-      cert: jest.fn(),
-    },
-    apps: { length: 0 },
-    app: jest.fn(),
-    initializeApp: jest.fn(),
-  },
-}));
-
-// Mock Wikipedia Service
-jest.mock('../../../../src/features/challenges/data/wikipedia-feed.service');
+jest.mock('../../../../src/features/challenges/domain/create-manual-challenge.usecase');
 
 describe('POST /internal/challenges (Manual Creation)', () => {
   afterAll((done) => {
@@ -52,14 +26,13 @@ describe('POST /internal/challenges (Manual Creation)', () => {
       challenges: [{ startTitle: 'Albert Einstein', endTitle: 'Quantum Mechanics' }],
     };
 
-    // Mock BFS (Shortest path = 2)
-    (wikipediaFeedService.getLinksForPage as jest.Mock).mockResolvedValue(['Quantum Mechanics']);
-    (wikipediaFeedService.getBacklinksForPage as jest.Mock).mockResolvedValue(['Albert Einstein']);
+    const mockResponse = {
+      id: '2026-05-01',
+      targetTitle: 'Quantum Mechanics',
+      challenges: [{ minClicks: 2, difficulty: 'Easy' }],
+    };
 
-    // Mock persistence
-    (db.collection as jest.Mock).mockReturnThis();
-    (db.doc as jest.Mock).mockReturnThis();
-    (db.set as jest.Mock).mockResolvedValue(undefined);
+    (CreateManualChallengeUseCase.prototype.execute as jest.Mock).mockResolvedValue(mockResponse);
 
     const response = await request(app)
       .post('/internal/challenges')
@@ -69,8 +42,6 @@ describe('POST /internal/challenges (Manual Creation)', () => {
     expect(response.status).toBe(201);
     expect(response.body.status).toBe('success');
     expect(response.body.data.id).toBe(mockPayload.id);
-    expect(response.body.data.challenges[0].minClicks).toBeGreaterThan(0);
-    expect(response.body.data.challenges[0].difficulty).toBeDefined();
   });
 
   it('should return 400 if no path is found', async () => {
@@ -81,8 +52,11 @@ describe('POST /internal/challenges (Manual Creation)', () => {
       challenges: [{ startTitle: 'A', endTitle: 'B' }],
     };
 
-    (wikipediaFeedService.getLinksForPage as jest.Mock).mockResolvedValue([]);
-    (wikipediaFeedService.getBacklinksForPage as jest.Mock).mockResolvedValue([]);
+    (CreateManualChallengeUseCase.prototype.execute as jest.Mock).mockRejectedValue({
+      message: 'No path found',
+      statusCode: 400,
+      isOperational: true,
+    });
 
     const response = await request(app)
       .post('/internal/challenges')

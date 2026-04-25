@@ -1,29 +1,8 @@
 import request from 'supertest';
 import { app, server } from '../../../../src/index';
-import { db } from '../../../../src/config/firebase.config';
+import { GetUserUseCase } from '../../../../src/features/users/domain/get-user.usecase';
 
-// Mock Firebase Config globally
-jest.mock('../../../../src/config/firebase.config', () => ({
-  db: {
-    collection: jest.fn().mockReturnThis(),
-    doc: jest.fn().mockReturnThis(),
-    get: jest.fn(),
-  },
-  admin: {
-    auth: jest.fn(),
-    firestore: {
-      FieldValue: {
-        serverTimestamp: jest.fn(),
-      },
-    },
-    credential: {
-      cert: jest.fn(),
-    },
-    apps: { length: 0 },
-    app: jest.fn(),
-    initializeApp: jest.fn(),
-  },
-}));
+jest.mock('../../../../src/features/users/domain/get-user.usecase');
 
 describe('GET /users/:uid (Profile Retrieval)', () => {
   afterAll((done) => {
@@ -47,13 +26,7 @@ describe('GET /users/:uid (Profile Retrieval)', () => {
       updatedAt: new Date(),
     };
 
-    (db.collection as jest.Mock).mockReturnThis();
-    (db.doc as jest.Mock).mockReturnThis();
-    (db.get as jest.Mock).mockResolvedValue({
-      exists: true,
-      id: mockUser.id,
-      data: () => mockUser,
-    });
+    (GetUserUseCase.prototype.execute as jest.Mock).mockResolvedValue(mockUser);
 
     const response = await request(app).get(`/users/${mockUser.id}`);
 
@@ -63,9 +36,11 @@ describe('GET /users/:uid (Profile Retrieval)', () => {
   });
 
   it('should return 404 if user not found', async () => {
-    (db.collection as jest.Mock).mockReturnThis();
-    (db.doc as jest.Mock).mockReturnThis();
-    (db.get as jest.Mock).mockResolvedValue({ exists: false });
+    (GetUserUseCase.prototype.execute as jest.Mock).mockRejectedValue({
+      message: 'User not found',
+      statusCode: 404,
+      isOperational: true,
+    });
 
     const response = await request(app).get('/users/non-existent-uid');
 

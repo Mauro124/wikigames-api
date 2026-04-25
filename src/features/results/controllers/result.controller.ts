@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult, body } from 'express-validator';
-import { submitResultUseCase } from '../domain/submit-result.usecase';
+import { SubmitResultUseCase } from '../domain/submit-result.usecase';
 
 export class ResultController {
+  constructor(private readonly submitResultUseCase: SubmitResultUseCase) {}
+
   validateSubmission = [
     body('challengeId').isString().notEmpty(),
     body('userId').isString().notEmpty(),
@@ -26,7 +28,7 @@ export class ResultController {
     }
 
     try {
-      const response = await submitResultUseCase.execute(req.body);
+      const response = await this.submitResultUseCase.execute(req.body);
       res.status(response.alreadySubmitted ? 200 : 201).json(response);
     } catch (error) {
       next(error);
@@ -49,12 +51,10 @@ export class ResultController {
         isSurrender: true,
       };
 
-      const response = await submitResultUseCase.execute(payload);
+      const response = await this.submitResultUseCase.execute(payload);
       res.status(response.alreadySubmitted ? 200 : 201).json(response);
     } catch (error) {
       next(error);
     }
   }
 }
-
-export const resultController = new ResultController();

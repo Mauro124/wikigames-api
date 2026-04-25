@@ -64,5 +64,3 @@ export class WikipediaService {
     }
   }
 }
-
-export const wikipediaService = new WikipediaService();

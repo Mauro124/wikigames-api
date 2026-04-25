@@ -1,9 +1,14 @@
 import nock from 'nock';
-import { wikipediaFeedService } from '../../../../src/features/challenges/data/wikipedia-feed.service';
+import { WikipediaFeedService } from '../../../../src/features/challenges/data/wikipedia-feed.service';
 
 describe('WikipediaFeedService', () => {
+  let service: WikipediaFeedService;
   const lang = 'en';
   const baseUrl = `https://${lang}.wikipedia.org`;
+
+  beforeEach(() => {
+    service = new WikipediaFeedService();
+  });
 
   afterEach(() => {
     nock.cleanAll();
@@ -19,7 +24,7 @@ describe('WikipediaFeedService', () => {
         },
       });
 
-    const members = await wikipediaFeedService.getRandomArticlesFromCategory(lang, 'Science');
+    const members = await service.getRandomArticlesFromCategory(lang, 'Science');
     expect(members).toHaveLength(2);
     expect(members).toContain('Article 1');
   });
@@ -38,7 +43,7 @@ describe('WikipediaFeedService', () => {
         },
       });
 
-    const links = await wikipediaFeedService.getLinksForPage(lang, 'Earth');
+    const links = await service.getLinksForPage(lang, 'Earth');
     expect(links).toHaveLength(2);
     expect(links).toContain('Link 1');
   });

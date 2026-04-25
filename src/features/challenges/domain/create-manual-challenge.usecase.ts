@@ -1,6 +1,6 @@
 import { Challenge, SingleChallenge } from './challenge.entity';
-import { generateChallengeUseCase } from './generate-challenge.usecase';
-import { challengesRepository } from '../data/firestore-challenges.repository';
+import { GenerateChallengeUseCase } from './generate-challenge.usecase';
+import { ChallengesRepository } from './challenges.repository';
 import { AppError } from '@shared/domain/app-error';
 import { logger } from '@shared/services/logger.service';
 
@@ -15,6 +15,11 @@ export interface ManualChallengeDto {
 }
 
 export class CreateManualChallengeUseCase {
+  constructor(
+    private readonly generateChallengeUseCase: GenerateChallengeUseCase,
+    private readonly challengesRepository: ChallengesRepository,
+  ) {}
+
   async execute(dto: ManualChallengeDto): Promise<Challenge> {
     const { id, lang, targetTitle, challenges } = dto;
 
@@ -29,7 +34,7 @@ export class CreateManualChallengeUseCase {
 
       logger.info(`Verifying manual challenge ${i + 1} (${lang}): ${startTitle} -> ${endTitle}`);
 
-      const minClicks = await generateChallengeUseCase.findShortestPath(lang, startTitle, endTitle);
+      const minClicks = await this.generateChallengeUseCase.findShortestPath(lang, startTitle, endTitle);
 
       if (minClicks === 0) {
         throw new AppError(
@@ -43,7 +48,7 @@ export class CreateManualChallengeUseCase {
         startTitle,
         endTitle,
         minClicks,
-        difficulty: generateChallengeUseCase.calculateDifficulty(minClicks),
+        difficulty: this.generateChallengeUseCase.calculateDifficulty(minClicks),
       });
     }
 
@@ -56,11 +61,9 @@ export class CreateManualChallengeUseCase {
       updatedAt: new Date(),
     };
 
-    await challengesRepository.save(challenge);
+    await this.challengesRepository.save(challenge);
     logger.info({ msg: 'Manual challenge created', id: challenge.id, lang: challenge.lang });
 
     return challenge;
   }
 }
-
-export const createManualChallengeUseCase = new CreateManualChallengeUseCase();

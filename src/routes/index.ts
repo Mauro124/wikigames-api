@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { healthRouter } from '@routes/health.routes';
-import { articleRouter } from '@features/articles/article.routes';
+import { articleRouter } from '@routes/article.routes';
 import { internalRouter } from '@routes/internal.routes';
-import { resultRouter } from './result.routes';
-import { statsRouter } from './stats.routes';
-import { userRouter } from '@features/users/user.routes';
+import { resultRouter } from '@routes/result.routes';
+import { statsRouter } from '@routes/stats.routes';
+import { userRouter } from '@routes/user.routes';
 
 const router = Router();
 

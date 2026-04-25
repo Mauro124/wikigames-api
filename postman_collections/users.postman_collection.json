@@ -1,282 +1,231 @@
 {
-	"info": {
-		"_postman_id": "8b843794-2792-491c-99d8-9128f730ad4d",
-		"name": "Users",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Register User",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"test_user\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/users",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"users"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Leaderboard",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/users/leaderboard",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"users",
-						"leaderboard"
-					]
-				},
-				"description": "Obtiene los 50 mejores jugadores basados en su puntaje total."
-			},
-			"response": [
-				{
-					"name": "Success",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/users/leaderboard",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								"leaderboard"
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [],
-					"cookie": [],
-					"body": "{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"username\": \"top_player\",\n            \"avatarSvg\": \"<svg>...</svg>\",\n            \"totalScore\": 15000,\n            \"longestStreak\": 14\n        }\n    ]\n}"
-				}
-			]
-		},
-		{
-			"name": "Get User Profile",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/users/:uid",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"users",
-						":uid"
-					],
-					"variable": [
-						{
-							"key": "uid",
-							"value": "test-uid"
-						}
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Success",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/users/:uid",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								":uid"
-							],
-							"variable": [
-								{
-									"key": "uid",
-									"value": "test-uid"
-								}
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [],
-					"cookie": [],
-					"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": \"test-uid\",\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\",\n        \"avatarSvg\": \"<svg>...</svg>\",\n        \"stats\": {\n            \"currentStreak\": 1,\n            \"longestStreak\": 1,\n            \"bestTimeSeconds\": 45,\n            \"bestClicks\": 5,\n            \"totalGames\": 1,\n            \"totalScore\": 730,\n            \"lastPlayedDate\": \"2026-04-21\"\n        },\n        \"createdAt\": \"2026-04-21T12:00:00.000Z\",\n        \"updatedAt\": \"2026-04-21T12:00:00.000Z\"\n    }\n}"
-				}
-			]
-		},
-		{
-			"name": "Get User Stats",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/users/:uid/stats",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"users",
-						":uid",
-						"stats"
-					],
-					"variable": [
-						{
-							"key": "uid",
-							"value": "test-uid"
-						}
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Success",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/users/:uid/stats",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								":uid",
-								"stats"
-							],
-							"variable": [
-								{
-									"key": "uid",
-									"value": "test-uid"
-								}
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [],
-					"cookie": [],
-					"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"currentStreak\": 1,\n        \"longestStreak\": 1,\n        \"bestTimeSeconds\": 45,\n        \"bestClicks\": 5,\n        \"totalGames\": 1,\n        \"totalScore\": 730,\n        \"lastPlayedDate\": \"2026-04-21\"\n    }\n}"
-				}
-			]
-		},
-		{
-			"name": "Update My Profile",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"new_username\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/users/me",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"users",
-						"me"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete My Account",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{base_url}}/users/me",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"users",
-						"me"
-					]
-				},
-				"description": "Permanently deletes the current user's account from Firebase Auth and Firestore."
-			},
-			"response": [
-				{
-					"name": "Success",
-					"originalRequest": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/users/me",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								"me"
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [],
-					"cookie": [],
-					"body": "{\n    \"status\": \"success\",\n    \"message\": \"Account deleted successfully\"\n}"
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "8b843794-2792-491c-99d8-9128f730ad4d",
+    "name": "Users",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"test_user\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/users",
+          "host": ["{{base_url}}"],
+          "path": ["users"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Leaderboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/users/leaderboard",
+          "host": ["{{base_url}}"],
+          "path": ["users", "leaderboard"]
+        },
+        "description": "Obtiene los 50 mejores jugadores basados en su puntaje total."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/leaderboard",
+              "host": ["{{base_url}}"],
+              "path": ["users", "leaderboard"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "cookie": [],
+          "body": "{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"username\": \"top_player\",\n            \"avatarSvg\": \"<svg>...</svg>\",\n            \"totalScore\": 15000,\n            \"longestStreak\": 14\n        }\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get User Profile",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/users/:uid",
+          "host": ["{{base_url}}"],
+          "path": ["users", ":uid"],
+          "variable": [
+            {
+              "key": "uid",
+              "value": "test-uid"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/:uid",
+              "host": ["{{base_url}}"],
+              "path": ["users", ":uid"],
+              "variable": [
+                {
+                  "key": "uid",
+                  "value": "test-uid"
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "cookie": [],
+          "body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": \"test-uid\",\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\",\n        \"avatarSvg\": \"<svg>...</svg>\",\n        \"stats\": {\n            \"currentStreak\": 1,\n            \"longestStreak\": 1,\n            \"bestTimeSeconds\": 45,\n            \"bestClicks\": 5,\n            \"totalGames\": 1,\n            \"totalScore\": 730,\n            \"lastPlayedDate\": \"2026-04-21\"\n        },\n        \"createdAt\": \"2026-04-21T12:00:00.000Z\",\n        \"updatedAt\": \"2026-04-21T12:00:00.000Z\"\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get User Stats",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/users/:uid/stats",
+          "host": ["{{base_url}}"],
+          "path": ["users", ":uid", "stats"],
+          "variable": [
+            {
+              "key": "uid",
+              "value": "test-uid"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/:uid/stats",
+              "host": ["{{base_url}}"],
+              "path": ["users", ":uid", "stats"],
+              "variable": [
+                {
+                  "key": "uid",
+                  "value": "test-uid"
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "cookie": [],
+          "body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"currentStreak\": 1,\n        \"longestStreak\": 1,\n        \"bestTimeSeconds\": 45,\n        \"bestClicks\": 5,\n        \"totalGames\": 1,\n        \"totalScore\": 730,\n        \"lastPlayedDate\": \"2026-04-21\"\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update My Profile",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"new_username\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/users/me",
+          "host": ["{{base_url}}"],
+          "path": ["users", "me"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete My Account",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/users/me",
+          "host": ["{{base_url}}"],
+          "path": ["users", "me"]
+        },
+        "description": "Permanently deletes the current user's account from Firebase Auth and Firestore."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "cookie": [],
+          "body": "{\n    \"status\": \"success\",\n    \"message\": \"Account deleted successfully\"\n}"
+        }
+      ]
+    }
+  ]
 }

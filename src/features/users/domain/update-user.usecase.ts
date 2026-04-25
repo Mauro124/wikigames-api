@@ -1,5 +1,5 @@
 import { User } from './user.entity';
-import { userRepository } from '../data/firestore-user.repository';
+import { UserRepository } from './user.repository';
 import { AppError } from '@shared/domain/app-error';
 import { logger } from '@shared/services/logger.service';
 
@@ -8,12 +8,14 @@ export interface UpdateUserDto {
 }
 
 export class UpdateUserUseCase {
+  constructor(private readonly userRepository: UserRepository) {}
+
   async execute(uid: string, dto: UpdateUserDto): Promise<User> {
     if (!uid) {
       throw new AppError('UID is required', 400);
     }
 
-    const existingUser = await userRepository.findById(uid);
+    const existingUser = await this.userRepository.findById(uid);
     if (!existingUser) {
       throw new AppError('User not found', 404);
     }
@@ -29,7 +31,7 @@ export class UpdateUserUseCase {
         );
       }
 
-      const isUnique = await userRepository.isUsernameUnique(dto.username);
+      const isUnique = await this.userRepository.isUsernameUnique(dto.username);
       if (!isUnique) {
         throw new AppError('Username is already taken', 400);
       }
@@ -40,10 +42,8 @@ export class UpdateUserUseCase {
       return existingUser;
     }
 
-    const updatedUser = await userRepository.update(uid, updates);
+    const updatedUser = await this.userRepository.update(uid, updates);
     logger.info({ msg: 'User profile updated', id: uid, updates });
     return updatedUser;
   }
 }
-
-export const updateUserUseCase = new UpdateUserUseCase();

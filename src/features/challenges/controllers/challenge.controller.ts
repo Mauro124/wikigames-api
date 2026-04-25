@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { challengesRepository } from '../data/firestore-challenges.repository';
+import { ChallengesRepository } from '../domain/challenges.repository';
 
 export class ChallengeController {
+  constructor(private readonly challengesRepository: ChallengesRepository) {}
+
   /**
    * Returns the challenge(s) for the current day based on language.
    */
@@ -10,7 +12,7 @@ export class ChallengeController {
     const lang = (req.query.lang as string) || 'en';
 
     try {
-      const challenge = await challengesRepository.findByIdAndLang(today, lang);
+      const challenge = await this.challengesRepository.findByIdAndLang(today, lang);
 
       if (!challenge) {
         res.status(404).json({
@@ -32,7 +34,7 @@ export class ChallengeController {
   async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     const lang = (req.query.lang as string) || 'en';
     try {
-      const challenges = await challengesRepository.findAllByLang(lang);
+      const challenges = await this.challengesRepository.findAllByLang(lang);
       // Sort by ID (date) descending and take last 7
       const recent = challenges.sort((a, b) => b.id.localeCompare(a.id)).slice(0, 7);
 
@@ -42,5 +44,3 @@ export class ChallengeController {
     }
   }
 }
-
-export const challengeController = new ChallengeController();

@@ -1,11 +1,16 @@
 import nock from 'nock';
-import { wikipediaService } from '../../../../src/features/articles/data/wikipedia.service';
+import { WikipediaService } from '../../../../src/features/articles/data/wikipedia.service';
 import { AppError } from '@shared/domain/app-error';
 
 describe('WikipediaService', () => {
+  let wikipediaService: WikipediaService;
   const lang = 'en';
   const title = 'Earth';
   const baseUrl = `https://${lang}.wikipedia.org`;
+
+  beforeEach(() => {
+    wikipediaService = new WikipediaService();
+  });
 
   afterEach(() => {
     nock.cleanAll();
@@ -22,7 +27,7 @@ describe('WikipediaService', () => {
   });
 
   it('should resolve redirects (handled by REST API natively)', async () => {
-    // REST API resolves redirects automatically. If we call with 'Pizza', 
+    // REST API resolves redirects automatically. If we call with 'Pizza',
     // it returns the content of the resolved page.
     nock(baseUrl)
       .get('/api/rest_v1/page/html/Pizza')
@@ -33,9 +38,7 @@ describe('WikipediaService', () => {
   });
 
   it('should throw 404 if article is missing', async () => {
-    nock(baseUrl)
-      .get('/api/rest_v1/page/html/NonExistent')
-      .reply(404);
+    nock(baseUrl).get('/api/rest_v1/page/html/NonExistent').reply(404);
 
     await expect(wikipediaService.fetchArticle(lang, 'NonExistent')).rejects.toThrow(AppError);
   });

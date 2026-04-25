@@ -1,4 +1,4 @@
-import { wikipediaService } from '../../../../src/features/articles/data/wikipedia.service';
+import { WikipediaService } from '../../../../src/features/articles/data/wikipedia.service';
 import { cacheService } from '../../../../src/shared/services/cache.service';
 import axios from 'axios';
 
@@ -6,11 +6,13 @@ jest.mock('axios');
 jest.mock('../../../../src/shared/services/cache.service');
 
 describe('WikipediaService (REST API + ETags)', () => {
+  let service: WikipediaService;
   const lang = 'en';
   const title = 'Test_Article';
   const url = `https://${lang}.wikipedia.org/api/rest_v1/page/html/${title}`;
 
   beforeEach(() => {
+    service = new WikipediaService();
     jest.clearAllMocks();
   });
 
@@ -26,7 +28,7 @@ describe('WikipediaService (REST API + ETags)', () => {
 
     (cacheService.get as jest.Mock).mockReturnValue(null);
 
-    const result = await wikipediaService.fetchArticle(lang, title);
+    const result = await service.fetchArticle(lang, title);
 
     expect(axios.get).toHaveBeenCalledWith(
       url,
@@ -47,7 +49,7 @@ describe('WikipediaService (REST API + ETags)', () => {
       status: 304,
     });
 
-    const result = await wikipediaService.fetchArticle(lang, title);
+    const result = await service.fetchArticle(lang, title);
 
     expect(axios.get).toHaveBeenCalledWith(
       url,
@@ -64,6 +66,6 @@ describe('WikipediaService (REST API + ETags)', () => {
       response: { status: 404 },
     });
 
-    await expect(wikipediaService.fetchArticle(lang, title)).rejects.toThrow('not found');
+    await expect(service.fetchArticle(lang, title)).rejects.toThrow('not found');
   });
 });

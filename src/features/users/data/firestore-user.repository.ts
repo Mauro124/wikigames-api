@@ -38,5 +38,3 @@ export class FirestoreUserRepository
     return snapshot.docs.map((doc) => this.mapDoc(doc.id, doc.data()));
   }
 }
-
-export const userRepository = new FirestoreUserRepository();

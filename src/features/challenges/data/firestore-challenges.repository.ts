@@ -7,8 +7,8 @@ export class FirestoreChallengesRepository
   extends BaseFirestoreRepository<Challenge>
   implements ChallengesRepository
 {
-  constructor() {
-    super('challenges');
+  constructor(db?: any) {
+    super('challenges', db);
   }
 
   /**
@@ -43,5 +43,3 @@ export class FirestoreChallengesRepository
     return snapshot.docs.map((doc) => this.mapDoc(doc.id, doc.data() as DocumentData));
   }
 }
-
-export const challengesRepository = new FirestoreChallengesRepository();

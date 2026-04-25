@@ -1,4 +1,4 @@
-import { statsRepository } from '../../../../src/features/stats/data/firestore-stats.repository';
+import { FirestoreStatsRepository } from '../../../../src/features/stats/data/firestore-stats.repository';
 import { db, admin } from '@config/firebase.config';
 
 jest.mock('@config/firebase.config', () => ({
@@ -20,6 +20,12 @@ jest.mock('@config/firebase.config', () => ({
 }));
 
 describe('FirestoreStatsRepository', () => {
+  let repository: FirestoreStatsRepository;
+
+  beforeEach(() => {
+    repository = new FirestoreStatsRepository();
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -30,7 +36,7 @@ describe('FirestoreStatsRepository', () => {
 
     (db.collection as jest.Mock).mockReturnValue({ doc: mockDoc });
 
-    await statsRepository.incrementStats('2024-05-24', 10, 60);
+    await repository.incrementStats('2024-05-24', 10, 60);
 
     expect(mockDoc).toHaveBeenCalledWith('2024-05-24');
     expect(admin.firestore.FieldValue.increment).toHaveBeenCalledWith(1); // totalWins
@@ -51,7 +57,7 @@ describe('FirestoreStatsRepository', () => {
 
     (db.collection as jest.Mock).mockReturnValue({ doc: mockDoc });
 
-    await statsRepository.incrementStats('2024-05-24', 25, 60);
+    await repository.incrementStats('2024-05-24', 25, 60);
 
     expect(mockSet).toHaveBeenCalledWith(
       expect.objectContaining({

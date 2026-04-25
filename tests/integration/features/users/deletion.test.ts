@@ -1,10 +1,9 @@
 import request from 'supertest';
 import { app, server } from '../../../../src/index';
-import { db } from '../../../../src/config/firebase.config';
+import { DeleteUserUseCase } from '../../../../src/features/users/domain/delete-user.usecase';
 
 const mockAuth = {
   verifyIdToken: jest.fn().mockResolvedValue({ uid: 'test-uid', email: 'test@example.com' }),
-  deleteUser: jest.fn().mockResolvedValue(undefined),
 };
 
 // Mock Firebase Config globally
@@ -12,10 +11,16 @@ jest.mock('../../../../src/config/firebase.config', () => ({
   db: {
     collection: jest.fn().mockReturnThis(),
     doc: jest.fn().mockReturnThis(),
-    delete: jest.fn().mockResolvedValue(undefined),
+    get: jest.fn(),
+    delete: jest.fn(),
   },
   admin: {
     auth: () => mockAuth,
+    firestore: {
+      FieldValue: {
+        serverTimestamp: jest.fn(),
+      },
+    },
     credential: {
       cert: jest.fn(),
     },
@@ -24,6 +29,8 @@ jest.mock('../../../../src/config/firebase.config', () => ({
     initializeApp: jest.fn(),
   },
 }));
+
+jest.mock('../../../../src/features/users/domain/delete-user.usecase');
 
 describe('DELETE /users/me (Account Deletion)', () => {
   afterAll((done) => {
@@ -36,9 +43,12 @@ describe('DELETE /users/me (Account Deletion)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockAuth.verifyIdToken.mockResolvedValue({ uid: 'test-uid', email: 'test@example.com' });
   });
 
   it('should delete current user account successfully', async () => {
+    (DeleteUserUseCase.prototype.execute as jest.Mock).mockResolvedValue(undefined);
+
     const response = await request(app)
       .delete('/users/me')
       .set('Authorization', 'Bearer valid-token');
@@ -47,10 +57,7 @@ describe('DELETE /users/me (Account Deletion)', () => {
     expect(response.body.status).toBe('success');
     expect(response.body.message).toBe('Account deleted successfully');
 
-    expect(mockAuth.deleteUser).toHaveBeenCalledWith('test-uid');
-    expect(db.collection).toHaveBeenCalledWith('users');
-    expect(db.doc).toHaveBeenCalledWith('test-uid');
-    expect(db.doc().delete).toHaveBeenCalled();
+    expect(DeleteUserUseCase.prototype.execute).toHaveBeenCalledWith('test-uid');
   });
 
   it('should return 401 if no token provided', async () => {
@@ -61,7 +68,9 @@ describe('DELETE /users/me (Account Deletion)', () => {
   });
 
   it('should return 500 if deletion fails', async () => {
-    mockAuth.deleteUser.mockRejectedValueOnce(new Error('Auth failed'));
+    (DeleteUserUseCase.prototype.execute as jest.Mock).mockRejectedValue(
+      new Error('Failed to delete account'),
+    );
 
     const response = await request(app)
       .delete('/users/me')

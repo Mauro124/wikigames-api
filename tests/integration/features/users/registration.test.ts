@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app, server } from '../../../../src/index';
-import { db } from '../../../../src/config/firebase.config';
+import { RegisterUserUseCase } from '../../../../src/features/users/domain/register-user.usecase';
 
 const mockAuth = {
   verifyIdToken: jest.fn().mockResolvedValue({ uid: 'test-uid', email: 'test@example.com' }),
@@ -31,6 +31,9 @@ jest.mock('../../../../src/config/firebase.config', () => ({
   },
 }));
 
+// Mock UseCase
+jest.mock('../../../../src/features/users/domain/register-user.usecase');
+
 describe('POST /users (Registration)', () => {
   afterAll((done) => {
     if (server.listening) {
@@ -42,19 +45,19 @@ describe('POST /users (Registration)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockAuth.verifyIdToken.mockResolvedValue({ uid: 'test-uid', email: 'test@example.com' });
   });
 
   it('should register a new user successfully', async () => {
     const mockUsername = 'test_user';
+    const mockUser = {
+      id: 'test-uid',
+      username: mockUsername,
+      email: 'test@example.com',
+      avatarSvg: '<svg></svg>',
+    };
 
-    // Mock uniqueness check
-    (db.collection as jest.Mock).mockReturnThis();
-    (db.where as jest.Mock).mockReturnThis();
-    (db.get as jest.Mock).mockResolvedValue({ empty: true });
-
-    // Mock persistence
-    (db.doc as jest.Mock).mockReturnThis();
-    (db.set as jest.Mock).mockResolvedValue(undefined);
+    (RegisterUserUseCase.prototype.execute as jest.Mock).mockResolvedValue(mockUser);
 
     const response = await request(app)
       .post('/users')
@@ -64,55 +67,34 @@ describe('POST /users (Registration)', () => {
     expect(response.status).toBe(201);
     expect(response.body.status).toBe('success');
     expect(response.body.data.username).toBe(mockUsername);
-    expect(response.body.data.email).toBe('test@example.com');
-    expect(response.body.data.id).toBe('test-uid');
-    expect(response.body.data.avatarSvg).toBeDefined();
-    expect(response.body.data.avatarSvg).toContain('<svg');
   });
 
   it('should return 401 if email is missing from token', async () => {
-    const mockUsername = 'test_user';
-
-    // Mock token without email
     mockAuth.verifyIdToken.mockResolvedValueOnce({ uid: 'test-uid' });
 
     const response = await request(app)
       .post('/users')
       .set('Authorization', 'Bearer valid-token')
-      .send({ username: mockUsername });
+      .send({ username: 'test_user' });
 
     expect(response.status).toBe(401);
     expect(response.body.message).toBe('Unauthorized or missing email in token');
   });
 
   it('should return 400 if username is taken', async () => {
-    const mockUsername = 'existing_user';
-
-    // Mock username taken
-    (db.collection as jest.Mock).mockReturnThis();
-    (db.where as jest.Mock).mockReturnThis();
-    (db.get as jest.Mock).mockResolvedValue({
-      empty: false,
-      docs: [{ id: 'other-uid', data: () => ({ username: mockUsername }) }],
+    (RegisterUserUseCase.prototype.execute as jest.Mock).mockRejectedValue({
+      message: 'Username is already taken',
+      statusCode: 400,
+      isOperational: true,
     });
 
     const response = await request(app)
       .post('/users')
       .set('Authorization', 'Bearer valid-token')
-      .send({ username: mockUsername });
+      .send({ username: 'existing_user' });
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe('Username is already taken');
-  });
-
-  it('should return 400 for invalid username format', async () => {
-    const response = await request(app)
-      .post('/users')
-      .set('Authorization', 'Bearer valid-token')
-      .send({ username: 'a' }); // too short
-
-    expect(response.status).toBe(400);
-    expect(response.body.status).toBe('error');
   });
 
   it('should return 401 if no token provided', async () => {

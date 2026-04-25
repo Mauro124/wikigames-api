@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { app, server } from '../../../../src/index';
 import { db } from '../../../../src/config/firebase.config';
-import { wikipediaFeedService } from '../../../../src/features/challenges/data/wikipedia-feed.service';
+import { CreateManualChallengeUseCase } from '../../../../src/features/challenges/domain/create-manual-challenge.usecase';
 
 // Mock Firebase Config
 jest.mock('../../../../src/config/firebase.config', () => ({
@@ -27,8 +27,8 @@ jest.mock('../../../../src/config/firebase.config', () => ({
   },
 }));
 
-// Mock Wikipedia Service
-jest.mock('../../../../src/features/challenges/data/wikipedia-feed.service');
+// Mock UseCase
+jest.mock('../../../../src/features/challenges/domain/create-manual-challenge.usecase');
 
 describe('Multi-Language Challenges', () => {
   afterAll((done) => {
@@ -52,21 +52,16 @@ describe('Multi-Language Challenges', () => {
       challenges: [{ startTitle: 'Lobo', endTitle: 'Napoleón' }],
     };
 
-    // Mock BFS
-    (wikipediaFeedService.getLinksForPage as jest.Mock).mockResolvedValue(['Napoleón']);
-    (wikipediaFeedService.getBacklinksForPage as jest.Mock).mockResolvedValue(['Lobo']);
-
-    // Verify correct collection path: challenges -> es -> daily -> 2026-05-01
-    (db.collection as jest.Mock).mockReturnThis();
-    (db.doc as jest.Mock).mockReturnThis();
+    (CreateManualChallengeUseCase.prototype.execute as jest.Mock).mockResolvedValue(mockChallenge);
 
     await request(app)
       .post('/internal/challenges')
       .set('x-generator-key', 'test-key')
       .send(mockChallenge);
 
-    expect(db.collection).toHaveBeenCalledWith('challenges');
-    expect(db.doc).toHaveBeenCalledWith('es'); // Language doc
+    expect(CreateManualChallengeUseCase.prototype.execute).toHaveBeenCalledWith(
+      expect.objectContaining({ lang: 'es' }),
+    );
   });
 
   it('should retrieve challenge based on lang query param', async () => {

@@ -36,6 +36,35 @@
       "response": []
     },
     {
+      "name": "Generate Today's Challenge",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-GENERATOR-KEY",
+            "value": "{{generator_key}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"lang\": \"es\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/internal/challenges/generate/today",
+          "host": ["{{base_url}}"],
+          "path": ["internal", "challenges", "generate", "today"]
+        },
+        "description": "Genera el desafío para el día de hoy (10 desafíos con un objetivo fijo) utilizando la lógica de LRU desde el repositorio de objetivos."
+      },
+      "response": []
+    },
+    {
       "name": "Create Manual Challenge",
       "request": {
         "method": "POST",

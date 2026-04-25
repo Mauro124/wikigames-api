@@ -1,10 +1,19 @@
 import request from 'supertest';
 import { app, server } from '../../../../src/index';
-import { generateChallengeUseCase } from '../../../../src/features/challenges/domain/generate-challenge.usecase';
+import { GenerateChallengeUseCase } from '../../../../src/features/challenges/domain/generate-challenge.usecase';
 
 jest.mock('../../../../src/features/challenges/domain/generate-challenge.usecase');
 
 describe('Internal Challenge Generation API', () => {
+  let mockGenerateMonthlyBatch: jest.Mock;
+
+  beforeEach(() => {
+    mockGenerateMonthlyBatch = jest.fn();
+    (GenerateChallengeUseCase as jest.Mock).mockImplementation(() => ({
+      generateMonthlyBatch: mockGenerateMonthlyBatch,
+    }));
+  });
+
   afterAll((done) => {
     if (server.listening) {
       server.close(done);
@@ -14,7 +23,7 @@ describe('Internal Challenge Generation API', () => {
   });
 
   it('should trigger monthly generation in background', async () => {
-    (generateChallengeUseCase.generateMonthlyBatch as jest.Mock).mockResolvedValue(300);
+    mockGenerateMonthlyBatch.mockResolvedValue(300);
 
     const response = await request(app)
       .post('/internal/challenges/generate')

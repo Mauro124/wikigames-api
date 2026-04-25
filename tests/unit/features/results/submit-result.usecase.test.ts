@@ -1,81 +1,113 @@
-import { submitResultUseCase } from '../../../../src/features/results/domain/submit-result.usecase';
-import { resultsRepository } from '../../../../src/features/results/data/firestore-results.repository';
-import { statsRepository } from '../../../../src/features/stats/data/firestore-stats.repository';
+import { SubmitResultUseCase } from '../../../../src/features/results/domain/submit-result.usecase';
 import { AppError } from '@shared/domain/app-error';
 
-jest.mock('../../../../src/features/results/data/firestore-results.repository');
-jest.mock('../../../../src/features/stats/data/firestore-stats.repository');
-
 describe('SubmitResultUseCase', () => {
+  let useCase: SubmitResultUseCase;
+  let mockResultsRepo: any;
+  let mockStatsRepo: any;
+  let mockUpdateUserStatsUseCase: any;
+  let mockGetStatsUseCase: any;
+  let mockShareVisualizer: any;
+
   const validResult = {
     challengeId: '2024-06-01_0',
     userId: 'user123',
     clicks: 5,
     timeSeconds: 60,
     path: ['A', 'B', 'C'],
+    lang: 'en',
   };
+
+  beforeEach(() => {
+    mockResultsRepo = {
+      exists: jest.fn(),
+      save: jest.fn(),
+    };
+    mockStatsRepo = {
+      incrementStats: jest.fn(),
+    };
+    mockUpdateUserStatsUseCase = {
+      execute: jest.fn(),
+    };
+    mockGetStatsUseCase = {
+      execute: jest.fn(),
+    };
+    mockShareVisualizer = {
+      generate: jest.fn().mockReturnValue('mock share text'),
+    };
+
+    useCase = new SubmitResultUseCase(
+      mockResultsRepo,
+      mockStatsRepo,
+      mockUpdateUserStatsUseCase,
+      mockGetStatsUseCase,
+      mockShareVisualizer,
+    );
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should save result and increment stats if not duplicate', async () => {
-    (resultsRepository.exists as jest.Mock).mockResolvedValue(false);
-    (resultsRepository.save as jest.Mock).mockResolvedValue(undefined);
-    (statsRepository.incrementStats as jest.Mock).mockResolvedValue(undefined);
+    mockResultsRepo.exists.mockResolvedValue(false);
+    mockResultsRepo.save.mockResolvedValue(undefined);
+    mockStatsRepo.incrementStats.mockResolvedValue(undefined);
+    mockGetStatsUseCase.execute.mockResolvedValue({ averageClicks: 10 });
 
-    const response = await submitResultUseCase.execute(validResult as any);
+    const response = await useCase.execute(validResult as any);
 
     expect(response.success).toBe(true);
-    expect(response.shareText).toBeDefined();
-    expect(resultsRepository.exists).toHaveBeenCalledWith('2024-06-01_0', 'user123');
-    expect(resultsRepository.save).toHaveBeenCalledWith(validResult);
-    expect(statsRepository.incrementStats).toHaveBeenCalledWith('2024-06-01_0', 5, 60, undefined);
+    expect(response.shareText).toBe('mock share text');
+    expect(mockResultsRepo.exists).toHaveBeenCalledWith('2024-06-01_0', 'user123');
+    expect(mockResultsRepo.save).toHaveBeenCalledWith(validResult);
+    expect(mockStatsRepo.incrementStats).toHaveBeenCalledWith('2024-06-01_0', 5, 60, undefined);
+    expect(mockUpdateUserStatsUseCase.execute).toHaveBeenCalled();
   });
 
   it('should save result and increment totalLosses if isSurrender is true', async () => {
-    (resultsRepository.exists as jest.Mock).mockResolvedValue(false);
-    (resultsRepository.save as jest.Mock).mockResolvedValue(undefined);
-    (statsRepository.incrementStats as jest.Mock).mockResolvedValue(undefined);
+    mockResultsRepo.exists.mockResolvedValue(false);
+    mockResultsRepo.save.mockResolvedValue(undefined);
+    mockStatsRepo.incrementStats.mockResolvedValue(undefined);
 
     const surrenderResult = { ...validResult, isSurrender: true };
-    const response = await submitResultUseCase.execute(surrenderResult as any);
+    const response = await useCase.execute(surrenderResult as any);
 
     expect(response.success).toBe(true);
     expect(response.shareText).toBeUndefined(); // No share text for surrenders
-    expect(resultsRepository.save).toHaveBeenCalledWith(surrenderResult);
-    expect(statsRepository.incrementStats).toHaveBeenCalledWith('2024-06-01_0', 5, 60, true);
+    expect(mockResultsRepo.save).toHaveBeenCalledWith(surrenderResult);
+    expect(mockStatsRepo.incrementStats).toHaveBeenCalledWith('2024-06-01_0', 5, 60, true);
   });
 
   it('should return alreadySubmitted if result exists', async () => {
-    (resultsRepository.exists as jest.Mock).mockResolvedValue(true);
+    mockResultsRepo.exists.mockResolvedValue(true);
 
-    const response = await submitResultUseCase.execute(validResult as any);
+    const response = await useCase.execute(validResult as any);
 
     expect(response).toEqual({ success: true, alreadySubmitted: true });
-    expect(resultsRepository.save).not.toHaveBeenCalled();
-    expect(statsRepository.incrementStats).not.toHaveBeenCalled();
+    expect(mockResultsRepo.save).not.toHaveBeenCalled();
+    expect(mockStatsRepo.incrementStats).not.toHaveBeenCalled();
   });
 
   it('should reject missing challengeId or userId', async () => {
     await expect(
-      submitResultUseCase.execute({ ...validResult, challengeId: '' } as any),
+      useCase.execute({ ...validResult, challengeId: '' } as any),
     ).rejects.toThrow(AppError);
 
     await expect(
-      submitResultUseCase.execute({ ...validResult, userId: '' } as any),
+      useCase.execute({ ...validResult, userId: '' } as any),
     ).rejects.toThrow(AppError);
   });
 
   it('should reject clicks < 1', async () => {
-    await expect(submitResultUseCase.execute({ ...validResult, clicks: 0 } as any)).rejects.toThrow(
+    await expect(useCase.execute({ ...validResult, clicks: 0 } as any)).rejects.toThrow(
       AppError,
     );
   });
 
   it('should reject timeSeconds < 1', async () => {
     await expect(
-      submitResultUseCase.execute({ ...validResult, timeSeconds: 0 } as any),
+      useCase.execute({ ...validResult, timeSeconds: 0 } as any),
     ).rejects.toThrow(AppError);
   });
 });

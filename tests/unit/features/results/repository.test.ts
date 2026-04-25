@@ -1,4 +1,4 @@
-import { resultsRepository } from '../../../../src/features/results/data/firestore-results.repository';
+import { FirestoreResultsRepository } from '../../../../src/features/results/data/firestore-results.repository';
 import { db } from '@config/firebase.config';
 
 jest.mock('@config/firebase.config', () => ({
@@ -16,6 +16,12 @@ jest.mock('@config/firebase.config', () => ({
 }));
 
 describe('FirestoreResultsRepository', () => {
+  let repository: FirestoreResultsRepository;
+
+  beforeEach(() => {
+    repository = new FirestoreResultsRepository();
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -34,22 +40,20 @@ describe('FirestoreResultsRepository', () => {
       path: ['A', 'B'],
     };
 
-    await resultsRepository.save(result as any);
+    await repository.save(result as any);
 
     expect(mockDoc).toHaveBeenCalledWith('2024-05-24_user123');
   });
 
   it('should find by challenge', async () => {
     const mockGet = jest.fn().mockResolvedValue({
-      docs: [
-        { id: 'id1', data: () => ({ clicks: 5, createdAt: new Date(), updatedAt: new Date() }) },
-      ],
+      docs: [{ id: '1', data: () => ({ challengeId: '2024-05-24' }) }],
     });
     const mockWhere = jest.fn().mockReturnValue({ get: mockGet });
 
     (db.collection as jest.Mock).mockReturnValue({ where: mockWhere });
 
-    const results = await resultsRepository.findByChallenge('2024-05-24');
+    const results = await repository.findByChallenge('2024-05-24');
 
     expect(mockWhere).toHaveBeenCalledWith('challengeId', '==', '2024-05-24');
     expect(results).toHaveLength(1);
@@ -61,7 +65,7 @@ describe('FirestoreResultsRepository', () => {
 
     (db.collection as jest.Mock).mockReturnValue({ doc: mockDoc });
 
-    const exists = await resultsRepository.exists('2024-05-24', 'user123');
+    const exists = await repository.exists('2024-05-24', 'user123');
 
     expect(mockDoc).toHaveBeenCalledWith('2024-05-24_user123');
     expect(exists).toBe(true);

@@ -1,17 +1,24 @@
-import { getStatsUseCase } from '../../../../src/features/stats/domain/get-stats.usecase';
-import { statsRepository } from '../../../../src/features/stats/data/firestore-stats.repository';
-
-jest.mock('../../../../src/features/stats/data/firestore-stats.repository');
+import { GetStatsUseCase } from '../../../../src/features/stats/domain/get-stats.usecase';
 
 describe('GetStatsUseCase', () => {
+  let useCase: GetStatsUseCase;
+  let mockStatsRepo: any;
+
+  beforeEach(() => {
+    mockStatsRepo = {
+      findById: jest.fn(),
+    };
+    useCase = new GetStatsUseCase(mockStatsRepo);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should return null if stats not found', async () => {
-    (statsRepository.findById as jest.Mock).mockResolvedValue(null);
+    mockStatsRepo.findById.mockResolvedValue(null);
 
-    const result = await getStatsUseCase.execute('not-found');
+    const result = await useCase.execute('not-found');
     expect(result).toBeNull();
   });
 
@@ -24,9 +31,9 @@ describe('GetStatsUseCase', () => {
       distribution: { '10': 5, '20': 5 },
     };
 
-    (statsRepository.findById as jest.Mock).mockResolvedValue(mockStats);
+    mockStatsRepo.findById.mockResolvedValue(mockStats);
 
-    const result = await getStatsUseCase.execute('2024-06-01_0');
+    const result = await useCase.execute('2024-06-01_0');
 
     expect(result).toBeDefined();
     expect(result!.averageClicks).toBe(15);
@@ -42,9 +49,9 @@ describe('GetStatsUseCase', () => {
       distribution: {},
     };
 
-    (statsRepository.findById as jest.Mock).mockResolvedValue(mockStats);
+    mockStatsRepo.findById.mockResolvedValue(mockStats);
 
-    const result = await getStatsUseCase.execute('2024-06-01_0');
+    const result = await useCase.execute('2024-06-01_0');
 
     expect(result).toBeDefined();
     expect(result!.averageClicks).toBe(0);

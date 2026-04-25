@@ -10,14 +10,14 @@ if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL || !p
 const firebaseApp = admin.apps.length
   ? admin.app()
   : process.env.FIREBASE_CONFIG || process.env.K_SERVICE
-  ? admin.initializeApp()
-  : admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: privateKey,
-      }),
-    });
+    ? admin.initializeApp()
+    : admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: privateKey,
+        }),
+      });
 
 const db = admin.firestore(firebaseApp);
 db.settings({ ignoreUndefinedProperties: true });

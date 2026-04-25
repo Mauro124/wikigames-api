@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import { getStatsUseCase } from '../domain/get-stats.usecase';
+import { GetStatsUseCase } from '../domain/get-stats.usecase';
 
 export class StatsController {
+  constructor(private readonly getStatsUseCase: GetStatsUseCase) {}
+
   async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { id } = req.params;
 
     try {
-      const stats = await getStatsUseCase.execute(id as string);
+      const stats = await this.getStatsUseCase.execute(id as string);
       if (!stats) {
         res.status(404).json({ status: 'error', message: 'Stats not found for this challenge' });
         return;
@@ -17,5 +19,3 @@ export class StatsController {
     }
   }
 }
-
-export const statsController = new StatsController();

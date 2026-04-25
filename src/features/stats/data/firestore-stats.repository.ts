@@ -50,5 +50,3 @@ export class FirestoreStatsRepository
     );
   }
 }
-
-export const statsRepository = new FirestoreStatsRepository();

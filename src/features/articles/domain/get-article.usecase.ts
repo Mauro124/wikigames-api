@@ -1,11 +1,16 @@
 import { Article } from './article.entity';
-import { wikipediaService } from '../data/wikipedia.service';
-import { articleCooker } from '../utils/html-cooker';
+import { WikipediaService } from '../data/wikipedia.service';
+import { ArticleCooker } from '../utils/html-cooker';
 
 export class GetArticleUseCase {
+  constructor(
+    private readonly wikipediaService: WikipediaService,
+    private readonly articleCooker: ArticleCooker,
+  ) {}
+
   async execute(lang: string, title: string): Promise<Article> {
-    const { html, resolvedTitle, cached } = await wikipediaService.fetchArticle(lang, title);
-    const blocks = articleCooker.cook(html);
+    const { html, resolvedTitle, cached } = await this.wikipediaService.fetchArticle(lang, title);
+    const blocks = this.articleCooker.cook(html);
 
     return {
       title,
@@ -17,5 +22,3 @@ export class GetArticleUseCase {
     };
   }
 }
-
-export const getArticleUseCase = new GetArticleUseCase();

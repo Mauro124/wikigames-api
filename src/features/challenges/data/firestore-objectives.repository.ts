@@ -6,8 +6,8 @@ export class FirestoreObjectivesRepository
   extends BaseFirestoreRepository<Objective>
   implements ObjectivesRepository
 {
-  constructor() {
-    super('objectives');
+  constructor(db?: any) {
+    super('objectives', db);
   }
 
   async findNextForLang(lang: string): Promise<Objective | null> {
@@ -24,10 +24,10 @@ export class FirestoreObjectivesRepository
     return this.mapDoc(doc.id, doc.data());
   }
 
-  async markAsUsed(id: string, lang: string): Promise<void> {
+  async markAsUsed(id: string): Promise<void> {
     const docRef = this.db.collection(this.collectionName).doc(id);
     const doc = await docRef.get();
-    
+
     if (!doc.exists) return;
 
     const data = doc.data();
@@ -44,5 +44,3 @@ export class FirestoreObjectivesRepository
     await this.create(objective);
   }
 }
-
-export const objectivesRepository = new FirestoreObjectivesRepository();

@@ -4,10 +4,11 @@ import { BaseEntity } from '../domain/base.entity';
 
 export abstract class BaseFirestoreRepository<T extends BaseEntity> {
   protected collectionName: string;
-  protected db: Firestore = db;
+  protected db: Firestore;
 
-  constructor(collectionName: string) {
+  constructor(collectionName: string, dbInstance: Firestore = db) {
     this.collectionName = collectionName;
+    this.db = dbInstance;
   }
 
   protected get collection(): CollectionReference {

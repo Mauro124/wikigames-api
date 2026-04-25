@@ -1,6 +1,12 @@
-import { articleCooker } from '../../../../src/features/articles/utils/html-cooker';
+import { ArticleCooker } from '../../../../src/features/articles/utils/html-cooker';
 
 describe('ArticleCooker', () => {
+  let articleCooker: ArticleCooker;
+
+  beforeEach(() => {
+    articleCooker = new ArticleCooker();
+  });
+
   const mockHtml = `
     <div id="mw-content-text">
       <div class="mw-parser-output">

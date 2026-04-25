@@ -96,7 +96,7 @@ describe('FirestoreObjectivesRepository', () => {
         }),
       });
 
-      await repo.markAsUsed('obj1', 'es');
+      await repo.markAsUsed('obj1');
 
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({

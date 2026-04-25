@@ -1,15 +1,18 @@
 import request from 'supertest';
 import { app, server } from '../../../../src/index';
 
-jest.mock('../../../../src/features/results/domain/submit-result.usecase', () => ({
-  submitResultUseCase: {
-    execute: jest.fn(),
-  },
-}));
+import { SubmitResultUseCase } from '../../../../src/features/results/domain/submit-result.usecase';
 
-import { submitResultUseCase } from '../../../../src/features/results/domain/submit-result.usecase';
+jest.mock('../../../../src/features/results/domain/submit-result.usecase');
 
 describe('POST /results/surrender', () => {
+  const mockExecute = jest.fn();
+
+  beforeAll(() => {
+    (SubmitResultUseCase as jest.Mock).mockImplementation(() => ({
+      execute: mockExecute,
+    }));
+  });
   afterAll((done) => {
     if (server.listening) {
       server.close(done);
@@ -23,7 +26,7 @@ describe('POST /results/surrender', () => {
   });
 
   it('should process surrender and return 201', async () => {
-    (submitResultUseCase.execute as jest.Mock).mockResolvedValue({
+    mockExecute.mockResolvedValue({
       success: true,
     });
 
@@ -35,9 +38,9 @@ describe('POST /results/surrender', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    
+
     // Check if payload injected dummy values and isSurrender
-    expect(submitResultUseCase.execute).toHaveBeenCalledWith(
+    expect(mockExecute).toHaveBeenCalledWith(
       expect.objectContaining({
         challengeId: '2024-06-01_0',
         userId: 'test_user',
@@ -46,7 +49,7 @@ describe('POST /results/surrender', () => {
         timeSeconds: 9999,
         path: [],
         isSurrender: true,
-      })
+      }),
     );
   });
 

@@ -1,6 +1,10 @@
 import request from 'supertest';
 import { app, server } from '../../../../src/index';
-import { db } from '../../../../src/config/firebase.config';
+import { UpdateUserUseCase } from '../../../../src/features/users/domain/update-user.usecase';
+
+const mockAuth = {
+  verifyIdToken: jest.fn().mockResolvedValue({ uid: 'test-uid', email: 'test@example.com' }),
+};
 
 // Mock Firebase Config globally
 jest.mock('../../../../src/config/firebase.config', () => ({
@@ -12,9 +16,7 @@ jest.mock('../../../../src/config/firebase.config', () => ({
     where: jest.fn().mockReturnThis(),
   },
   admin: {
-    auth: () => ({
-      verifyIdToken: jest.fn().mockResolvedValue({ uid: 'test-uid' }),
-    }),
+    auth: () => mockAuth,
     firestore: {
       FieldValue: {
         serverTimestamp: jest.fn(),
@@ -29,6 +31,8 @@ jest.mock('../../../../src/config/firebase.config', () => ({
   },
 }));
 
+jest.mock('../../../../src/features/users/domain/update-user.usecase');
+
 describe('PATCH /users/me (Profile Update)', () => {
   afterAll((done) => {
     if (server.listening) {
@@ -40,54 +44,40 @@ describe('PATCH /users/me (Profile Update)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockAuth.verifyIdToken.mockResolvedValue({ uid: 'test-uid', email: 'test@example.com' });
   });
 
   it('should update username successfully', async () => {
     const mockUser = {
       id: 'test-uid',
-      username: 'old_name',
+      username: 'new_name',
       avatarSvg: '<svg>...</svg>',
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    const newUsername = 'new_name';
-
-    (db.collection as jest.Mock).mockReturnThis();
-    (db.doc as jest.Mock).mockReturnThis();
-    // findById mock
-    (db.get as jest.Mock)
-      .mockResolvedValueOnce({ exists: true, id: mockUser.id, data: () => mockUser }) // findById
-      .mockResolvedValueOnce({ empty: true }) // isUsernameUnique (findByUsername)
-      .mockResolvedValueOnce({
-        exists: true,
-        id: mockUser.id,
-        data: () => ({ ...mockUser, username: newUsername }),
-      }); // get after update
+    (UpdateUserUseCase.prototype.execute as jest.Mock).mockResolvedValue(mockUser);
 
     const response = await request(app)
       .patch('/users/me')
       .set('Authorization', 'Bearer valid-token')
-      .send({ username: newUsername });
+      .send({ username: 'new_name' });
 
     expect(response.status).toBe(200);
-    expect(response.body.data.username).toBe(newUsername);
+    expect(response.body.data.username).toBe('new_name');
   });
 
   it('should return 400 if new username is taken', async () => {
-    const mockUser = { id: 'test-uid', username: 'old_name' };
-    const takenName = 'taken_name';
-
-    (db.collection as jest.Mock).mockReturnThis();
-    (db.doc as jest.Mock).mockReturnThis();
-    (db.get as jest.Mock)
-      .mockResolvedValueOnce({ exists: true, id: mockUser.id, data: () => mockUser })
-      .mockResolvedValueOnce({ empty: false, docs: [{ id: 'other-uid', data: () => ({}) }] }); // taken
+    (UpdateUserUseCase.prototype.execute as jest.Mock).mockRejectedValue({
+      message: 'Username is already taken',
+      statusCode: 400,
+      isOperational: true,
+    });
 
     const response = await request(app)
       .patch('/users/me')
       .set('Authorization', 'Bearer valid-token')
-      .send({ username: takenName });
+      .send({ username: 'taken_name' });
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe('Username is already taken');

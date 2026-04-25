@@ -1,14 +1,27 @@
 import { GenerateChallengeUseCase } from '../../../../src/features/challenges/domain/generate-challenge.usecase';
-import { wikipediaFeedService } from '../../../../src/features/challenges/data/wikipedia-feed.service';
 
 jest.mock('../../../../src/features/challenges/data/wikipedia-feed.service');
 jest.mock('../../../../src/features/challenges/data/firestore-challenges.repository');
 
 describe('Bidirectional BFS (findShortestPath)', () => {
   let useCase: GenerateChallengeUseCase;
+  let mockFeed: any;
+  let mockRepo: any;
+  let mockObjRepo: any;
 
   beforeEach(() => {
-    useCase = new GenerateChallengeUseCase();
+    mockFeed = {
+      getLinksForPage: jest.fn(),
+      getBacklinksForPage: jest.fn(),
+    };
+    mockRepo = {
+      save: jest.fn(),
+    };
+    mockObjRepo = {
+      findNextForLang: jest.fn(),
+      markAsUsed: jest.fn(),
+    };
+    useCase = new GenerateChallengeUseCase(mockFeed, mockRepo, mockObjRepo);
     jest.clearAllMocks();
   });
 
@@ -33,10 +46,10 @@ describe('Bidirectional BFS (findShortestPath)', () => {
       B: ['A'],
     };
 
-    (wikipediaFeedService.getLinksForPage as jest.Mock).mockImplementation((_, title) =>
+    mockFeed.getLinksForPage.mockImplementation((_, title: string) =>
       Promise.resolve(graph[title] || []),
     );
-    (wikipediaFeedService.getBacklinksForPage as jest.Mock).mockImplementation((_, title) =>
+    mockFeed.getBacklinksForPage.mockImplementation((_, title: string) =>
       Promise.resolve(reverseGraph[title] || []),
     );
 
@@ -47,16 +60,16 @@ describe('Bidirectional BFS (findShortestPath)', () => {
   });
 
   it('should return 0 if no path is found within limits', async () => {
-    (wikipediaFeedService.getLinksForPage as jest.Mock).mockResolvedValue([]);
-    (wikipediaFeedService.getBacklinksForPage as jest.Mock).mockResolvedValue([]);
+    mockFeed.getLinksForPage.mockResolvedValue([]);
+    mockFeed.getBacklinksForPage.mockResolvedValue([]);
 
     const result = await useCase.findShortestPath('en', 'A', 'Z');
     expect(result).toBe(0);
   });
 
   it('should return 1 for direct link', async () => {
-    (wikipediaFeedService.getLinksForPage as jest.Mock).mockResolvedValue(['B']);
-    (wikipediaFeedService.getBacklinksForPage as jest.Mock).mockResolvedValue(['A']);
+    mockFeed.getLinksForPage.mockResolvedValue(['B']);
+    mockFeed.getBacklinksForPage.mockResolvedValue(['A']);
 
     const result = await useCase.findShortestPath('en', 'A', 'B');
     expect(result).toBe(1);

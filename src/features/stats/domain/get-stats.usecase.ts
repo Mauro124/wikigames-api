@@ -1,9 +1,11 @@
-import { statsRepository } from '../data/firestore-stats.repository';
+import { StatsRepository } from './stats.repository';
 import { DailyStats } from './stats.entity';
 
 export class GetStatsUseCase {
+  constructor(private readonly statsRepository: StatsRepository) {}
+
   async execute(challengeId: string): Promise<DailyStats | null> {
-    const stats = await statsRepository.findById(challengeId);
+    const stats = await this.statsRepository.findById(challengeId);
 
     if (!stats) return null;
 
@@ -14,5 +16,3 @@ export class GetStatsUseCase {
     };
   }
 }
-
-export const getStatsUseCase = new GetStatsUseCase();

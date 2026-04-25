@@ -56,5 +56,3 @@ export class ShareVisualizer {
     return `${START_END_EMOJI} ${midSection} ${START_END_EMOJI}`;
   }
 }
-
-export const shareVisualizer = new ShareVisualizer();

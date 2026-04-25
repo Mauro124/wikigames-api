@@ -135,5 +135,3 @@ export class WikipediaFeedService {
     }
   }
 }
-
-export const wikipediaFeedService = new WikipediaFeedService();

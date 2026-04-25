@@ -1,5 +1,5 @@
 import { User } from './user.entity';
-import { userRepository } from '../data/firestore-user.repository';
+import { UserRepository } from './user.repository';
 import { generateAvatar } from '../utils/avatar.utils';
 import { AppError } from '@shared/domain/app-error';
 import { logger } from '@shared/services/logger.service';
@@ -11,6 +11,8 @@ export interface RegisterUserDto {
 }
 
 export class RegisterUserUseCase {
+  constructor(private readonly userRepository: UserRepository) {}
+
   async execute(dto: RegisterUserDto): Promise<User> {
     const { id, username, email } = dto;
 
@@ -26,7 +28,7 @@ export class RegisterUserUseCase {
       );
     }
 
-    const isUnique = await userRepository.isUsernameUnique(username);
+    const isUnique = await this.userRepository.isUsernameUnique(username);
     if (!isUnique) {
       throw new AppError('Username is already taken', 400);
     }
@@ -54,10 +56,8 @@ export class RegisterUserUseCase {
       updatedAt: new Date(),
     };
 
-    const user = await userRepository.create(newUser);
+    const user = await this.userRepository.create(newUser);
     logger.info({ msg: 'User registered', id: user.id, username: user.username });
     return user;
   }
 }
-
-export const registerUserUseCase = new RegisterUserUseCase();

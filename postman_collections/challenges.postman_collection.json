@@ -1,143 +1,118 @@
 {
-	"info": {
-		"_postman_id": "D2E3F4G5-H6I7-J8K9-L0M1-N2O3P4Q5R6S7",
-		"name": "WikiGames - Challenges",
-		"description": "Endpoints públicos para la consulta de desafíos diarios.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Get Today's Challenge",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/challenges/today?lang=en",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"challenges",
-						"today"
-					],
-					"query": [
-						{
-							"key": "lang",
-							"value": "en",
-							"description": "Idioma del desafío (en, es, etc.)"
-						}
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Success (English)",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/challenges/today?lang=en",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"challenges",
-								"today"
-							],
-							"query": [
-								{
-									"key": "lang",
-									"value": "en"
-								}
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [],
-					"cookie": [],
-					"body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"en\",\n    \"targetTitle\": \"Lionel Messi\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"DNA\",\n            \"endTitle\": \"Lionel Messi\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:00:00.000Z\"\n}"
-				},
-				{
-					"name": "Success (Spanish)",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/challenges/today?lang=es",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"challenges",
-								"today"
-							],
-							"query": [
-								{
-									"key": "lang",
-									"value": "es"
-								}
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [],
-					"cookie": [],
-					"body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"es\",\n    \"targetTitle\": \"Lionel Messi\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"ADN\",\n            \"endTitle\": \"Lionel Messi\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:05:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:05:00.000Z\"\n}"
-				}
-			]
-		},
-		{
-			"name": "List Recent Challenges",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/challenges?lang=en",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"challenges"
-					],
-					"query": [
-						{
-							"key": "lang",
-							"value": "en",
-							"description": "Idioma de los desafíos"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Challenge Stats",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/challenges/:id/stats",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"challenges",
-						":id",
-						"stats"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "2024-05-24"
-						}
-					]
-				}
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "_postman_id": "D2E3F4G5-H6I7-J8K9-L0M1-N2O3P4Q5R6S7",
+    "name": "WikiGames - Challenges",
+    "description": "Endpoints públicos para la consulta de desafíos diarios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Today's Challenge",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/challenges/today?lang=en",
+          "host": ["{{base_url}}"],
+          "path": ["challenges", "today"],
+          "query": [
+            {
+              "key": "lang",
+              "value": "en",
+              "description": "Idioma del desafío (en, es, etc.)"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Success (English)",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/challenges/today?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["challenges", "today"],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "en"
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "cookie": [],
+          "body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"en\",\n    \"targetTitle\": \"Lionel Messi\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"DNA\",\n            \"endTitle\": \"Lionel Messi\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:00:00.000Z\"\n}"
+        },
+        {
+          "name": "Success (Spanish)",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/challenges/today?lang=es",
+              "host": ["{{base_url}}"],
+              "path": ["challenges", "today"],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "es"
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "cookie": [],
+          "body": "{\n    \"id\": \"2026-04-21\",\n    \"lang\": \"es\",\n    \"targetTitle\": \"Lionel Messi\",\n    \"challenges\": [\n        {\n            \"id\": 1,\n            \"startTitle\": \"ADN\",\n            \"endTitle\": \"Lionel Messi\",\n            \"minClicks\": 4,\n            \"difficulty\": \"Medium\"\n        }\n    ],\n    \"createdAt\": \"2026-04-21T10:05:00.000Z\",\n    \"updatedAt\": \"2026-04-21T10:05:00.000Z\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "List Recent Challenges",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/challenges?lang=en",
+          "host": ["{{base_url}}"],
+          "path": ["challenges"],
+          "query": [
+            {
+              "key": "lang",
+              "value": "en",
+              "description": "Idioma de los desafíos"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Challenge Stats",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/challenges/:id/stats",
+          "host": ["{{base_url}}"],
+          "path": ["challenges", ":id", "stats"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "2024-05-24"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
 }

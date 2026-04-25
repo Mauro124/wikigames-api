@@ -17,7 +17,7 @@ describe('FirestoreChallengesRepository', () => {
   let repo: FirestoreChallengesRepository;
 
   beforeEach(() => {
-    repo = new FirestoreChallengesRepository();
+    repo = new FirestoreChallengesRepository(db);
     jest.clearAllMocks();
   });
 

@@ -1,13 +1,21 @@
 import { Response, NextFunction } from 'express';
 import { validationResult, body } from 'express-validator';
-import { registerUserUseCase } from '../domain/register-user.usecase';
-import { getUserUseCase } from '../domain/get-user.usecase';
-import { updateUserUseCase } from '../domain/update-user.usecase';
-import { deleteUserUseCase } from '../domain/delete-user.usecase';
-import { userRepository } from '../data/firestore-user.repository';
+import { RegisterUserUseCase } from '../domain/register-user.usecase';
+import { GetUserUseCase } from '../domain/get-user.usecase';
+import { UpdateUserUseCase } from '../domain/update-user.usecase';
+import { DeleteUserUseCase } from '../domain/delete-user.usecase';
+import { UserRepository } from '../domain/user.repository';
 import { AuthRequest } from '@middleware/verify-auth.middleware';
 
 export class UserController {
+  constructor(
+    private readonly registerUserUseCase: RegisterUserUseCase,
+    private readonly getUserUseCase: GetUserUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
+    private readonly userRepository: UserRepository,
+  ) {}
+
   validateRegistration = [
     body('username')
       .isString()
@@ -39,7 +47,7 @@ export class UserController {
     }
 
     try {
-      const user = await registerUserUseCase.execute({
+      const user = await this.registerUserUseCase.execute({
         id: uid,
         username: req.body.username,
         email,
@@ -58,7 +66,7 @@ export class UserController {
     const uid = req.params.uid as string;
 
     try {
-      const user = await getUserUseCase.execute(uid);
+      const user = await this.getUserUseCase.execute(uid);
 
       res.status(200).json({
         status: 'success',
@@ -73,7 +81,7 @@ export class UserController {
     const uid = req.params.uid as string;
 
     try {
-      const user = await getUserUseCase.execute(uid);
+      const user = await this.getUserUseCase.execute(uid);
 
       res.status(200).json({
         status: 'success',
@@ -86,7 +94,7 @@ export class UserController {
 
   async getLeaderboard(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const users = await userRepository.getLeaderboard(50);
+      const users = await this.userRepository.getLeaderboard(50);
       const data = users.map((u) => ({
         username: u.username,
         avatarSvg: u.avatarSvg,
@@ -117,7 +125,7 @@ export class UserController {
     }
 
     try {
-      const user = await updateUserUseCase.execute(uid, req.body);
+      const user = await this.updateUserUseCase.execute(uid, req.body);
 
       res.status(200).json({
         status: 'success',
@@ -136,7 +144,7 @@ export class UserController {
     }
 
     try {
-      await deleteUserUseCase.execute(uid);
+      await this.deleteUserUseCase.execute(uid);
 
       res.status(200).json({
         status: 'success',
@@ -147,5 +155,3 @@ export class UserController {
     }
   }
 }
-
-export const userController = new UserController();
