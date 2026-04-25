@@ -1,8 +1,8 @@
 import { Challenge, SingleChallenge } from './challenge.entity';
 import { wikipediaFeedService } from '../data/wikipedia-feed.service';
 import { challengesRepository } from '../data/firestore-challenges.repository';
+import { objectivesRepository } from '../data/firestore-objectives.repository';
 import { logger } from '@shared/services/logger.service';
-import { OBJECTIVES } from './objectives';
 import { STARTERS } from './starters';
 
 export class GenerateChallengeUseCase {
@@ -12,7 +12,6 @@ export class GenerateChallengeUseCase {
   async generateMonthlyBatch(startDate: Date, lang: string = 'en'): Promise<number> {
     let totalGenerated = 0;
 
-    const languageObjectives = OBJECTIVES[lang] || OBJECTIVES['en'];
     const languageStarters = STARTERS[lang] || STARTERS['en'];
 
     for (let day = 0; day < 30; day++) {
@@ -20,8 +19,13 @@ export class GenerateChallengeUseCase {
       currentDate.setDate(startDate.getDate() + day);
       const dateId = currentDate.toISOString().split('T')[0];
 
-      const objIdx = day % languageObjectives.length;
-      const targetTitle = languageObjectives[objIdx];
+      const objective = await objectivesRepository.findNextForLang(lang);
+      if (!objective) {
+        logger.error(`No objectives found in registry for ${lang}. Skipping ${dateId}.`);
+        continue;
+      }
+
+      const targetTitle = objective.title;
 
       logger.info(
         `Generating challenges for ${dateId} (Lang: ${lang}, Target: ${targetTitle})`,
@@ -67,6 +71,7 @@ export class GenerateChallengeUseCase {
           };
 
           await challengesRepository.save(challenge);
+          await objectivesRepository.markAsUsed(objective.id, lang);
           totalGenerated += challengesForDay.length;
           logger.info(
             `Finished ${dateId} (${lang}): ${challengesForDay.length} challenges generated.`,
