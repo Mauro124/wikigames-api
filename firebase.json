@@ -1,4 +1,8 @@
 {
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
   "functions": {
     "source": ".",
     "ignore": [
@@ -12,8 +16,6 @@
       "specs",
       "postman_collections"
     ],
-    "predeploy": [
-      "npm run build"
-    ]
+    "predeploy": ["npm run build"]
   }
 }
