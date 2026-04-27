@@ -1,5 +1,6 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { InternalChallengeController } from '@features/challenges/controllers/internal-challenge.controller';
+import { ObjectiveController } from '@features/challenges/controllers/objective.controller';
 import { GenerateChallengeUseCase } from '@features/challenges/domain/generate-challenge.usecase';
 import { CreateManualChallengeUseCase } from '@features/challenges/domain/create-manual-challenge.usecase';
 import { WikipediaFeedService } from '@features/challenges/data/wikipedia-feed.service';
@@ -9,7 +10,7 @@ import { authMiddleware } from '@middleware/auth.middleware';
 
 const internalRouter = Router();
 
-const provideController = () => {
+const provideChallengeController = () => {
   const wikipediaFeedService = new WikipediaFeedService();
   const challengesRepository = new FirestoreChallengesRepository();
   const objectivesRepository = new FirestoreObjectivesRepository();
@@ -28,31 +29,52 @@ const provideController = () => {
   return new InternalChallengeController(generateChallengeUseCase, createManualChallengeUseCase);
 };
 
-internalRouter.post(
-  '/challenges/generate/today',
-  authMiddleware,
-  (req, res, next) => {
-    const controller = provideController();
-    return controller.generateToday(req, res);
-  },
-);
+const provideObjectiveController = () => {
+  const objectivesRepository = new FirestoreObjectivesRepository();
+  return new ObjectiveController(objectivesRepository);
+};
 
-internalRouter.post(
-  '/challenges/generate',
-  authMiddleware,
-  (req, res, next) => {
-    const controller = provideController();
-    return controller.generateMonthlyBatch(req, res);
-  },
-);
+// --- Challenges Generation Routes ---
+
+internalRouter.post('/challenges/generate/today', authMiddleware, (req: Request, res: Response) => {
+  const controller = provideChallengeController();
+  return controller.generateToday(req, res);
+});
+
+internalRouter.post('/challenges/generate', authMiddleware, (req: Request, res: Response) => {
+  const controller = provideChallengeController();
+  return controller.generateMonthlyBatch(req, res);
+});
 
 internalRouter.post(
   '/challenges',
   authMiddleware,
-  (req, res, next) => {
-    const controller = provideController();
+  (req: Request, res: Response, next: NextFunction) => {
+    const controller = provideChallengeController();
     return controller.createManual(req, res, next);
   },
 );
+
+// --- Objectives Management Routes ---
+
+internalRouter.get('/objectives', authMiddleware, (req: Request, res: Response) => {
+  const controller = provideObjectiveController();
+  return controller.list(req, res, () => {});
+});
+
+internalRouter.post('/objectives', authMiddleware, (req: Request, res: Response) => {
+  const controller = provideObjectiveController();
+  return controller.create(req, res, () => {});
+});
+
+internalRouter.post('/objectives/batch', authMiddleware, (req: Request, res: Response) => {
+  const controller = provideObjectiveController();
+  return controller.createBatch(req, res, () => {});
+});
+
+internalRouter.delete('/objectives/:id', authMiddleware, (req: Request, res: Response) => {
+  const controller = provideObjectiveController();
+  return controller.delete(req, res, () => {});
+});
 
 export { internalRouter };

@@ -1,7 +1,7 @@
-import { FirestoreObjectivesRepository } from '@features/challenges/data/firestore-objectives.repository';
-import { db } from '@config/firebase.config';
+import { FirestoreObjectivesRepository } from '../../../../src/features/challenges/data/firestore-objectives.repository';
+import { db } from '../../../../src/config/firebase.config';
 
-jest.mock('@config/firebase.config', () => ({
+jest.mock('../../../../src/config/firebase.config', () => ({
   db: {
     collection: jest.fn().mockReturnThis(),
     doc: jest.fn().mockReturnThis(),
@@ -12,6 +12,7 @@ jest.mock('@config/firebase.config', () => ({
     get: jest.fn(),
     set: jest.fn(),
     update: jest.fn(),
+    batch: jest.fn(),
   },
 }));
 
@@ -104,6 +105,30 @@ describe('FirestoreObjectivesRepository', () => {
           lastUsedAt: expect.any(Date),
         }),
       );
+    });
+  });
+
+  describe('createBatch', () => {
+    it('should commit multiple operations in a batch', async () => {
+      const mockSet = jest.fn();
+      const mockCommit = jest.fn().mockResolvedValue(undefined);
+      const mockDoc = jest.fn().mockReturnValue({});
+
+      (db.collection as jest.Mock).mockReturnValue({ doc: mockDoc });
+      (db.batch as jest.Mock).mockReturnValue({
+        set: mockSet,
+        commit: mockCommit,
+      });
+
+      const objectives = [
+        { title: 'O1', lang: 'es', usageCount: 0, lastUsedAt: null },
+        { title: 'O2', lang: 'es', usageCount: 0, lastUsedAt: null },
+      ];
+
+      await repo.createBatch(objectives as any);
+
+      expect(mockSet).toHaveBeenCalledTimes(2);
+      expect(mockCommit).toHaveBeenCalledTimes(1);
     });
   });
 });

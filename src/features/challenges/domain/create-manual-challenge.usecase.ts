@@ -34,7 +34,11 @@ export class CreateManualChallengeUseCase {
 
       logger.info(`Verifying manual challenge ${i + 1} (${lang}): ${startTitle} -> ${endTitle}`);
 
-      const minClicks = await this.generateChallengeUseCase.findShortestPath(lang, startTitle, endTitle);
+      const minClicks = await this.generateChallengeUseCase.findShortestPath(
+        lang,
+        startTitle,
+        endTitle,
+      );
 
       if (minClicks === 0) {
         throw new AppError(

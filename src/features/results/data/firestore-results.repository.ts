@@ -11,18 +11,30 @@ export class FirestoreResultsRepository
   }
 
   async save(result: GameResult): Promise<void> {
-    const id = `${result.challengeId}_${result.userId}`;
-    await this.persist(id, result);
+    const { userId, challengeId } = result;
+    const docRef = this.db.collection('users').doc(userId).collection('results').doc(challengeId);
+    await docRef.set({
+      ...result,
+      updatedAt: new Date(),
+      createdAt: result.createdAt || new Date(),
+    });
   }
 
   async findByChallenge(challengeId: string): Promise<GameResult[]> {
-    const snapshot = await this.collection.where('challengeId', '==', challengeId).get();
+    const snapshot = await this.db
+      .collectionGroup('results')
+      .where('challengeId', '==', challengeId)
+      .get();
     return snapshot.docs.map((doc) => this.mapDoc(doc.id, doc.data()));
   }
 
   async exists(challengeId: string, userId: string): Promise<boolean> {
-    const id = `${challengeId}_${userId}`;
-    const doc = await this.collection.doc(id).get();
+    const doc = await this.db
+      .collection('users')
+      .doc(userId)
+      .collection('results')
+      .doc(challengeId)
+      .get();
     return doc.exists;
   }
 }

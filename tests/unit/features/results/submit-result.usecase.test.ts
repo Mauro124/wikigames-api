@@ -4,6 +4,7 @@ import { AppError } from '@shared/domain/app-error';
 describe('SubmitResultUseCase', () => {
   let useCase: SubmitResultUseCase;
   let mockResultsRepo: any;
+  let mockChallengesRepo: any;
   let mockStatsRepo: any;
   let mockUpdateUserStatsUseCase: any;
   let mockGetStatsUseCase: any;
@@ -23,6 +24,9 @@ describe('SubmitResultUseCase', () => {
       exists: jest.fn(),
       save: jest.fn(),
     };
+    mockChallengesRepo = {
+      findByIdAndLang: jest.fn(),
+    };
     mockStatsRepo = {
       incrementStats: jest.fn(),
     };
@@ -38,6 +42,7 @@ describe('SubmitResultUseCase', () => {
 
     useCase = new SubmitResultUseCase(
       mockResultsRepo,
+      mockChallengesRepo,
       mockStatsRepo,
       mockUpdateUserStatsUseCase,
       mockGetStatsUseCase,
@@ -54,6 +59,9 @@ describe('SubmitResultUseCase', () => {
     mockResultsRepo.save.mockResolvedValue(undefined);
     mockStatsRepo.incrementStats.mockResolvedValue(undefined);
     mockGetStatsUseCase.execute.mockResolvedValue({ averageClicks: 10 });
+    mockChallengesRepo.findByIdAndLang.mockResolvedValue({
+      challenges: [{ difficulty: 'Hard' }],
+    });
 
     const response = await useCase.execute(validResult as any);
 
@@ -62,7 +70,9 @@ describe('SubmitResultUseCase', () => {
     expect(mockResultsRepo.exists).toHaveBeenCalledWith('2024-06-01_0', 'user123');
     expect(mockResultsRepo.save).toHaveBeenCalledWith(validResult);
     expect(mockStatsRepo.incrementStats).toHaveBeenCalledWith('2024-06-01_0', 5, 60, undefined);
-    expect(mockUpdateUserStatsUseCase.execute).toHaveBeenCalled();
+    expect(mockUpdateUserStatsUseCase.execute).toHaveBeenCalledWith(
+      expect.objectContaining({ difficulty: 'Hard' }),
+    );
   });
 
   it('should save result and increment totalLosses if isSurrender is true', async () => {
@@ -90,24 +100,20 @@ describe('SubmitResultUseCase', () => {
   });
 
   it('should reject missing challengeId or userId', async () => {
-    await expect(
-      useCase.execute({ ...validResult, challengeId: '' } as any),
-    ).rejects.toThrow(AppError);
+    await expect(useCase.execute({ ...validResult, challengeId: '' } as any)).rejects.toThrow(
+      AppError,
+    );
 
-    await expect(
-      useCase.execute({ ...validResult, userId: '' } as any),
-    ).rejects.toThrow(AppError);
+    await expect(useCase.execute({ ...validResult, userId: '' } as any)).rejects.toThrow(AppError);
   });
 
   it('should reject clicks < 1', async () => {
-    await expect(useCase.execute({ ...validResult, clicks: 0 } as any)).rejects.toThrow(
-      AppError,
-    );
+    await expect(useCase.execute({ ...validResult, clicks: 0 } as any)).rejects.toThrow(AppError);
   });
 
   it('should reject timeSeconds < 1', async () => {
-    await expect(
-      useCase.execute({ ...validResult, timeSeconds: 0 } as any),
-    ).rejects.toThrow(AppError);
+    await expect(useCase.execute({ ...validResult, timeSeconds: 0 } as any)).rejects.toThrow(
+      AppError,
+    );
   });
 });

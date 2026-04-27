@@ -18,7 +18,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"challengeId\": \"2024-05-24\",\n    \"deviceId\": \"user-123\",\n    \"clicks\": 5,\n    \"timeSeconds\": 120,\n    \"path\": [\"Earth\", \"Moon\", \"Philosophy\"]\n}"
+          "raw": "{\n    \"challengeId\": \"2024-05-24_0\",\n    \"userId\": \"user-123\",\n    \"lang\": \"es\",\n    \"clicks\": 5,\n    \"timeSeconds\": 120,\n    \"path\": [\"Earth\", \"Moon\", \"Philosophy\"]\n}"
         },
         "url": {
           "raw": "{{base_url}}/results",
@@ -40,7 +40,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"challengeId\": \"2024-05-24\",\n    \"userId\": \"user-123\"\n}"
+          "raw": "{\n    \"challengeId\": \"2024-05-24_0\",\n    \"userId\": \"user-123\",\n    \"lang\": \"es\"\n}"
         },
         "url": {
           "raw": "{{base_url}}/results/surrender",

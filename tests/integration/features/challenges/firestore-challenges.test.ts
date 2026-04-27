@@ -17,11 +17,11 @@ describe('GenerateChallengeUseCase Integration', () => {
     challengesRepository = new FirestoreChallengesRepository() as any;
     objectivesRepository = new FirestoreObjectivesRepository() as any;
     wikipediaFeedService = new WikipediaFeedService() as any;
-    
+
     generateChallengeUseCase = new GenerateChallengeUseCase(
       wikipediaFeedService,
       challengesRepository,
-      objectivesRepository
+      objectivesRepository,
     );
   });
 

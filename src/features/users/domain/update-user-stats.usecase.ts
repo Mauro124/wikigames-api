@@ -8,13 +8,22 @@ export interface UpdateStatsDto {
   clicks: number;
   timeSeconds: number;
   isSurrender?: boolean;
+  difficulty?: 'Easy' | 'Medium' | 'Hard';
 }
 
 export class UpdateUserStatsUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(dto: UpdateStatsDto): Promise<void> {
-    const { userId, challengeId, lang, clicks, timeSeconds, isSurrender } = dto;
+    const {
+      userId,
+      challengeId,
+      lang,
+      clicks,
+      timeSeconds,
+      isSurrender,
+      difficulty = 'Medium',
+    } = dto;
 
     const user = await this.userRepository.findById(userId);
     if (!user) {
@@ -31,7 +40,13 @@ export class UpdateUserStatsUseCase {
       const basePoints = 500;
       const efficiencyBonus = Math.floor((100 / clicks) * 10);
       const speedBonus = Math.floor((300 / timeSeconds) * 5);
-      raceScore = Math.max(550, basePoints + efficiencyBonus + speedBonus);
+
+      const diffMultiplier = difficulty === 'Hard' ? 1.5 : difficulty === 'Easy' ? 0.8 : 1.0;
+
+      const calculatedScore = Math.floor(
+        (basePoints + efficiencyBonus + speedBonus) * diffMultiplier,
+      );
+      raceScore = Math.max(550, calculatedScore);
     }
 
     let newStreak = stats.currentStreak;

@@ -43,4 +43,22 @@ export class FirestoreObjectivesRepository
   async save(objective: Objective): Promise<void> {
     await this.create(objective);
   }
+
+  async createBatch(
+    objectives: Omit<Objective, 'id' | 'createdAt' | 'updatedAt'>[],
+  ): Promise<void> {
+    const batch = this.db.batch();
+    const now = new Date();
+
+    for (const obj of objectives) {
+      const docRef = this.db.collection(this.collectionName).doc();
+      batch.set(docRef, {
+        ...obj,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    await batch.commit();
+  }
 }

@@ -1,5 +1,6 @@
 import { GameResult } from './result.entity';
 import { ResultsRepository } from './results.repository';
+import { ChallengesRepository } from '@features/challenges/domain/challenges.repository';
 import { StatsRepository } from '@features/stats/domain/stats.repository';
 import { GetStatsUseCase } from '@features/stats/domain/get-stats.usecase';
 import { UpdateUserStatsUseCase } from '@features/users/domain/update-user-stats.usecase';
@@ -16,6 +17,7 @@ export interface SubmitResultResponse {
 export class SubmitResultUseCase {
   constructor(
     private readonly resultsRepository: ResultsRepository,
+    private readonly challengesRepository: ChallengesRepository,
     private readonly statsRepository: StatsRepository,
     private readonly updateUserStatsUseCase: UpdateUserStatsUseCase,
     private readonly getStatsUseCase: GetStatsUseCase,
@@ -23,7 +25,7 @@ export class SubmitResultUseCase {
   ) {}
 
   async execute(result: GameResult): Promise<SubmitResultResponse> {
-    const { challengeId, userId, clicks, timeSeconds } = result;
+    const { challengeId, userId, clicks, timeSeconds, lang } = result;
 
     if (!challengeId || !userId) {
       throw new AppError('challengeId and userId are required', 400);
@@ -43,6 +45,20 @@ export class SubmitResultUseCase {
       return { success: true, alreadySubmitted: true };
     }
 
+    // Determine difficulty from Firestore securely
+    let difficulty: 'Easy' | 'Medium' | 'Hard' | undefined;
+    try {
+      const [dateId, subIndexStr] = challengeId.split('_');
+      const challenge = await this.challengesRepository.findByIdAndLang(dateId, lang);
+      const subIndex = parseInt(subIndexStr, 10);
+
+      if (challenge && challenge.challenges && !isNaN(subIndex)) {
+        difficulty = challenge.challenges[subIndex]?.difficulty;
+      }
+    } catch (err) {
+      logger.warn({ msg: 'Failed to retrieve difficulty from Firestore', challengeId, error: err });
+    }
+
     await this.resultsRepository.save(result);
 
     await this.statsRepository.incrementStats(challengeId, clicks, timeSeconds, result.isSurrender);
@@ -51,10 +67,11 @@ export class SubmitResultUseCase {
     await this.updateUserStatsUseCase.execute({
       userId,
       challengeId,
-      lang: result.lang,
+      lang,
       clicks,
       timeSeconds,
       isSurrender: result.isSurrender,
+      difficulty,
     });
 
     if (result.isSurrender) {

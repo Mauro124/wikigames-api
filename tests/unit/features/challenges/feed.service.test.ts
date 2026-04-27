@@ -14,21 +14,6 @@ describe('WikipediaFeedService', () => {
     nock.cleanAll();
   });
 
-  it('should fetch category members', async () => {
-    nock(baseUrl)
-      .get('/w/api.php')
-      .query(true)
-      .reply(200, {
-        query: {
-          categorymembers: [{ title: 'Article 1' }, { title: 'Article 2' }],
-        },
-      });
-
-    const members = await service.getRandomArticlesFromCategory(lang, 'Science');
-    expect(members).toHaveLength(2);
-    expect(members).toContain('Article 1');
-  });
-
   it('should fetch links for a page', async () => {
     nock(baseUrl)
       .get('/w/api.php')

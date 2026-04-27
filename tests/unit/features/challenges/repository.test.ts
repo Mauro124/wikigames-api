@@ -25,8 +25,7 @@ describe('FirestoreChallengesRepository', () => {
     const mockChallenge: Challenge = {
       id: '2026-05-01',
       lang: 'es',
-      categoryStart: 'S',
-      categoryEnd: 'E',
+      targetTitle: 'Napoleón',
       challenges: [],
       createdAt: new Date(),
       updatedAt: new Date(),

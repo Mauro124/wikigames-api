@@ -7,91 +7,205 @@
   },
   "item": [
     {
-      "name": "Generate Monthly Batch",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "X-GENERATOR-KEY",
-            "value": "{{generator_key}}",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"startDate\": \"2024-06-01\",\n    \"lang\": \"es\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+      "name": "Challenges",
+      "item": [
+        {
+          "name": "Generate Monthly Batch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-GENERATOR-KEY",
+                "value": "{{generator_key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"startDate\": \"2024-06-01\",\n    \"lang\": \"es\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/internal/challenges/generate",
+              "host": ["{{base_url}}"],
+              "path": ["internal", "challenges", "generate"]
+            },
+            "description": "Genera 30 días de desafíos (10 por día) con un objetivo fijo por día y verificación de ruta BFS."
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{base_url}}/internal/challenges/generate",
-          "host": ["{{base_url}}"],
-          "path": ["internal", "challenges", "generate"]
+        {
+          "name": "Generate Today's Challenge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-GENERATOR-KEY",
+                "value": "{{generator_key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"lang\": \"es\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/internal/challenges/generate/today",
+              "host": ["{{base_url}}"],
+              "path": ["internal", "challenges", "generate", "today"]
+            },
+            "description": "Genera el desafío para el día de hoy (10 desafíos con un objetivo fijo) utilizando la lógica de LRU desde el repositorio de objetivos."
+          },
+          "response": []
         },
-        "description": "Genera 30 días de desafíos (10 por día) con un objetivo fijo por día y verificación de ruta BFS."
-      },
-      "response": []
+        {
+          "name": "Create Manual Challenge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-GENERATOR-KEY",
+                "value": "{{generator_key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": \"2026-05-01\",\n    \"lang\": \"en\",\n    \"targetTitle\": \"French Revolution\",\n    \"challenges\": [\n        {\n            \"startTitle\": \"Albert Einstein\",\n            \"endTitle\": \"French Revolution\"\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/internal/challenges",
+              "host": ["{{base_url}}"],
+              "path": ["internal", "challenges"]
+            },
+            "description": "Crea un desafío específico para una fecha determinada con un objetivo fijo, calculando automáticamente minClicks y dificultad."
+          },
+          "response": []
+        }
+      ]
     },
     {
-      "name": "Generate Today's Challenge",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "X-GENERATOR-KEY",
-            "value": "{{generator_key}}",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"lang\": \"es\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+      "name": "Objectives",
+      "item": [
+        {
+          "name": "List Objectives",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-GENERATOR-KEY",
+                "value": "{{generator_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/internal/objectives",
+              "host": ["{{base_url}}"],
+              "path": ["internal", "objectives"]
+            },
+            "description": "Lista todos los objetivos registrados en la base de datos."
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{base_url}}/internal/challenges/generate/today",
-          "host": ["{{base_url}}"],
-          "path": ["internal", "challenges", "generate", "today"]
+        {
+          "name": "Create Objective",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-GENERATOR-KEY",
+                "value": "{{generator_key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Boca Juniors\",\n    \"lang\": \"es\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/internal/objectives",
+              "host": ["{{base_url}}"],
+              "path": ["internal", "objectives"]
+            },
+            "description": "Agrega un nuevo objetivo al pool disponible para la generación diaria."
+          },
+          "response": []
         },
-        "description": "Genera el desafío para el día de hoy (10 desafíos con un objetivo fijo) utilizando la lógica de LRU desde el repositorio de objetivos."
-      },
-      "response": []
-    },
-    {
-      "name": "Create Manual Challenge",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "X-GENERATOR-KEY",
-            "value": "{{generator_key}}",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"id\": \"2026-05-01\",\n    \"lang\": \"en\",\n    \"targetTitle\": \"French Revolution\",\n    \"challenges\": [\n        {\n            \"startTitle\": \"Albert Einstein\",\n            \"endTitle\": \"French Revolution\"\n        }\n    ]\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+        {
+          "name": "Create Objectives Batch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-GENERATOR-KEY",
+                "value": "{{generator_key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"objectives\": [\n        { \"title\": \"Objective 1\", \"lang\": \"es\" },\n        { \"title\": \"Objective 2\", \"lang\": \"es\" }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/internal/objectives/batch",
+              "host": ["{{base_url}}"],
+              "path": ["internal", "objectives", "batch"]
+            },
+            "description": "Agrega múltiples objetivos al pool de forma atómica (máximo 500 por petición)."
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{base_url}}/internal/challenges",
-          "host": ["{{base_url}}"],
-          "path": ["internal", "challenges"]
-        },
-        "description": "Crea un desafío específico para una fecha determinada con un objetivo fijo, calculando automáticamente minClicks y dificultad."
-      },
-      "response": []
+        {
+          "name": "Delete Objective",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-GENERATOR-KEY",
+                "value": "{{generator_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/internal/objectives/:id",
+              "host": ["{{base_url}}"],
+              "path": ["internal", "objectives", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "OBJECTIVE_ID"
+                }
+              ]
+            },
+            "description": "Elimina un objetivo de la base de datos por su ID."
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

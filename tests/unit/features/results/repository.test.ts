@@ -12,6 +12,7 @@ jest.mock('@config/firebase.config', () => ({
         get: jest.fn(),
       })),
     })),
+    collectionGroup: jest.fn(),
   },
 }));
 
@@ -26,11 +27,18 @@ describe('FirestoreResultsRepository', () => {
     jest.clearAllMocks();
   });
 
-  it('should save a result with deterministic ID', async () => {
+  it('should save a result with deterministic path in user subcollection', async () => {
     const mockSet = jest.fn().mockResolvedValue(undefined);
-    const mockDoc = jest.fn().mockReturnValue({ set: mockSet });
+    const mockResultsCol = jest.fn().mockReturnThis();
+    const mockDoc = jest.fn().mockReturnThis();
 
-    (db.collection as jest.Mock).mockReturnValue({ doc: mockDoc });
+    (db.collection as jest.Mock).mockReturnValue({
+      doc: jest.fn().mockReturnValue({
+        collection: mockResultsCol.mockReturnValue({
+          doc: mockDoc.mockReturnValue({ set: mockSet }),
+        }),
+      }),
+    });
 
     const result = {
       challengeId: '2024-05-24',
@@ -42,32 +50,42 @@ describe('FirestoreResultsRepository', () => {
 
     await repository.save(result as any);
 
-    expect(mockDoc).toHaveBeenCalledWith('2024-05-24_user123');
+    expect(db.collection).toHaveBeenCalledWith('users');
+    expect(mockResultsCol).toHaveBeenCalledWith('results');
+    expect(mockDoc).toHaveBeenCalledWith('2024-05-24');
   });
 
-  it('should find by challenge', async () => {
+  it('should find by challenge using collectionGroup', async () => {
     const mockGet = jest.fn().mockResolvedValue({
       docs: [{ id: '1', data: () => ({ challengeId: '2024-05-24' }) }],
     });
     const mockWhere = jest.fn().mockReturnValue({ get: mockGet });
 
-    (db.collection as jest.Mock).mockReturnValue({ where: mockWhere });
+    (db.collectionGroup as jest.Mock).mockReturnValue({ where: mockWhere });
 
     const results = await repository.findByChallenge('2024-05-24');
 
+    expect(db.collectionGroup).toHaveBeenCalledWith('results');
     expect(mockWhere).toHaveBeenCalledWith('challengeId', '==', '2024-05-24');
     expect(results).toHaveLength(1);
   });
 
-  it('should check if result exists', async () => {
+  it('should check if result exists in user subcollection', async () => {
     const mockGet = jest.fn().mockResolvedValue({ exists: true });
-    const mockDoc = jest.fn().mockReturnValue({ get: mockGet });
+    const mockResultsCol = jest.fn().mockReturnThis();
+    const mockDoc = jest.fn().mockReturnThis();
 
-    (db.collection as jest.Mock).mockReturnValue({ doc: mockDoc });
+    (db.collection as jest.Mock).mockReturnValue({
+      doc: jest.fn().mockReturnValue({
+        collection: mockResultsCol.mockReturnValue({
+          doc: mockDoc.mockReturnValue({ get: mockGet }),
+        }),
+      }),
+    });
 
     const exists = await repository.exists('2024-05-24', 'user123');
 
-    expect(mockDoc).toHaveBeenCalledWith('2024-05-24_user123');
+    expect(mockDoc).toHaveBeenCalledWith('2024-05-24');
     expect(exists).toBe(true);
   });
 });
