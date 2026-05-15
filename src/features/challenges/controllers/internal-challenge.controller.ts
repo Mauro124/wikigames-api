@@ -47,7 +47,7 @@ export class InternalChallengeController {
 
       this.generateChallengeUseCase
         .generateForDate(today, lang)
-        .then((total) => logger.info(`Daily generation complete for ${lang}. Total: ${total}`))
+        .then((result) => logger.info(`Daily generation complete for ${lang}. Total: ${result.count}`))
         .catch((err) => logger.error(`Daily generation failed for ${lang}: ${err.message}`));
 
       res.status(202).json({

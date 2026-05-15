@@ -12,12 +12,12 @@ import { onRequest } from 'firebase-functions/v2/https';
 const app = express();
 
 app.use(helmet());
-// app.use(
-//   cors({
-//     origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
-//     credentials: true,
-//   }),
-// );
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(httpLogger);
 app.use(router);
@@ -40,6 +40,13 @@ if (
   });
 }
 
-export const api = onRequest({ memory: '256MiB', timeoutSeconds: 60, region: 'us-central1' }, app);
+export const api = onRequest({
+  memory: '512MiB',
+  timeoutSeconds: 60,
+  region: 'us-central1',
+  maxInstances: 100,
+  minInstances: 1,
+  concurrency: 80
+}, app);
 
 export { app, server };

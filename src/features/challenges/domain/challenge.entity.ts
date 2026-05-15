@@ -6,10 +6,12 @@ export interface SingleChallenge {
   endTitle: string;
   minClicks: number;
   difficulty: 'Easy' | 'Medium' | 'Hard';
+  perfectPath: string[];
 }
 
 export interface Challenge extends BaseEntity {
   lang: string;
   targetTitle: string;
+  targetDescription?: string;
   challenges: SingleChallenge[];
 }

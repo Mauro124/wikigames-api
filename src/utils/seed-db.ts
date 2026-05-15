@@ -165,6 +165,7 @@ async function seed() {
         endTitle: 'Philosophy',
         minClicks: 3,
         difficulty: 'Easy' as const,
+        perfectPath: ['Earth', 'Life', 'Knowledge', 'Philosophy'],
       },
     ],
     createdAt: new Date(),

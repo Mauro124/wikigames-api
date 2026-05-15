@@ -34,18 +34,20 @@ export class CreateManualChallengeUseCase {
 
       logger.info(`Verifying manual challenge ${i + 1} (${lang}): ${startTitle} -> ${endTitle}`);
 
-      const minClicks = await this.generateChallengeUseCase.findShortestPath(
+      const path = await this.generateChallengeUseCase.findShortestPath(
         lang,
         startTitle,
         endTitle,
       );
 
-      if (minClicks === 0) {
+      if (!path || path.length === 0) {
         throw new AppError(
           `No path found for challenge ${i + 1} in language "${lang}": ${startTitle} -> ${endTitle}`,
           400,
         );
       }
+
+      const minClicks = path.length - 1;
 
       verifiedChallenges.push({
         id: i + 1,
@@ -53,6 +55,7 @@ export class CreateManualChallengeUseCase {
         endTitle,
         minClicks,
         difficulty: this.generateChallengeUseCase.calculateDifficulty(minClicks),
+        perfectPath: path,
       });
     }
 

@@ -56,22 +56,22 @@ describe('Bidirectional BFS (findShortestPath)', () => {
     const result = await useCase.findShortestPath('en', 'A', 'D');
 
     // Shortest path: A -> F -> D (2 clicks)
-    expect(result).toBe(2);
+    expect(result).toEqual(['A', 'F', 'D']);
   });
 
-  it('should return 0 if no path is found within limits', async () => {
+  it('should return null if no path is found within limits', async () => {
     mockFeed.getLinksForPage.mockResolvedValue([]);
     mockFeed.getBacklinksForPage.mockResolvedValue([]);
 
     const result = await useCase.findShortestPath('en', 'A', 'Z');
-    expect(result).toBe(0);
+    expect(result).toBeNull();
   });
 
-  it('should return 1 for direct link', async () => {
+  it('should return 1 click path for direct link', async () => {
     mockFeed.getLinksForPage.mockResolvedValue(['B']);
     mockFeed.getBacklinksForPage.mockResolvedValue(['A']);
 
     const result = await useCase.findShortestPath('en', 'A', 'B');
-    expect(result).toBe(1);
+    expect(result).toEqual(['A', 'B']);
   });
 });
